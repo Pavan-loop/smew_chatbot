@@ -13,15 +13,19 @@ router = APIRouter()
 
 class ChatRequest(BaseModel):
   message: str = Field(min_length=1, max_length=500)
+  history: list[dict] = Field(default_factory=list)
 
 def sse(payload: dict) -> str:
   return f"data: {json.dumps(payload)}\n\n"
 
-async def event_stream(message: str) -> AsyncIterator[str]:
-  messages = [
-    {"role": "system", "content": SYSTEM_PROMPT},
-    {"role": "user", "content": message},
-  ]
+async def event_stream(message: str, history: list[dict]) -> AsyncIterator[str]:
+  recent = history[-20:]
+
+  messages = (
+    [{"role": "system", "content": SYSTEM_PROMPT}]
+    + recent
+    + [{"role": "user", "content": message}]
+    )
   try:
     async for chunk in stream(messages, tools=TOOLS):
       if isinstance(chunk, ToolCallEvent):
@@ -41,7 +45,7 @@ async def event_stream(message: str) -> AsyncIterator[str]:
 @router.post("/chat")
 async def chat(body: ChatRequest) -> StreamingResponse:
   return StreamingResponse(
-    event_stream(body.message),
+    event_stream(body.message, body.history),
     media_type="text/event-stream",
     headers={
       "Cache-Control" : "no-cache",
