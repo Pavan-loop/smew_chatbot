@@ -4,8 +4,9 @@ from collections.abc import AsyncIterator
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
+from app.llm.tools import TOOLS
 
-from app.llm.openai_client import stream
+from app.llm.openai_client import stream, ToolCallEvent
 from app.prompt.system import SYSTEM_PROMPT
 
 router = APIRouter()
@@ -22,8 +23,16 @@ async def event_stream(message: str) -> AsyncIterator[str]:
     {"role": "user", "content": message},
   ]
   try:
-    async for chunk in stream(messages):
-      yield sse({"type": "text", "text": chunk})
+    async for chunk in stream(messages, tools=TOOLS):
+      if isinstance(chunk, ToolCallEvent):
+        yield sse({
+          "type" : "action",
+          "action" : "show_lead_form", 
+          "service" : chunk.arguments.get("service"),
+          "notes" : chunk.arguments.get("notes"),
+        })
+      else:
+        yield sse({"type": "text", "text": chunk})
   except Exception as e: 
     yield sse({"type": "error", "text": "Something went wrong. Call us at 9986464819."})
   finally:
