@@ -10,7 +10,7 @@ app.add_middleware(
     allow_origins=settings.allowed_origins,
     allow_credentials=False,
     allow_methods=["POST", "GET", "OPTIONS"],
-    allow_headers=["Content-Type"],
+    allow_headers=["Content-Type", "x-visitor-id"],
 )
 
 @app.get("/healthz")

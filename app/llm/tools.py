@@ -4,11 +4,13 @@ TOOLS = [
         "function": {
             "name": "capture_lead",
             "description": (
-                "You MUST call this function when a customer asks about price, cost, "
-                "rate, or how much anything costs. You MUST also call this when they "
-                "give dimensions, mention a deadline, or ask about a site visit. "
-                "Never reply to a price question with text. Calling this function IS "
-                "your response to a price question. Not calling it is an error."
+                    "Call this to collect the customer's contact details for a quote. "
+                    "Call it IMMEDIATELY when the customer shows buying intent — "
+                    "this includes asking about price, giving dimensions, mentioning a deadline, "
+                    "asking about a site visit, or agreeing to get a quote. "
+                    "When the customer agrees to a quote, call this tool as your FIRST action "
+                    "before writing any text. Do NOT explain anything before calling it. "
+                    "Do NOT ask follow-up questions. Just call the tool."
             ),
             "parameters": {
                 "type": "object",
