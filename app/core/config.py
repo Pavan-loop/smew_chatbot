@@ -8,6 +8,8 @@ class Settings(BaseSettings):
   openai_api_base: str = "https://api.openai.com/v1"
   llm_timout_seconds: float = 30.0
   allowed_origins: list[str] = ["http://localhost:3000"]
+  telegram_bot_token: str = ""
+  telegram_chat_id: str = ""
 
 @lru_cache()
 def get_settings() -> Settings:
