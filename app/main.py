@@ -19,7 +19,7 @@ app.add_middleware(
 
 @app.get("/healthz")
 async def liveness():
-    return {"status": "ok"}
+    return {"status": "ok", "debug_token_set": bool(settings.debug_token)}
 
 
 app.include_router(chat_router, prefix="/api")
