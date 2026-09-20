@@ -17,9 +17,19 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # ── what we try to learn about every enquiry ────────────────────────────────
-# Order = the order we ask in. Each slot is asked at most once (service twice).
-SLOT_ORDER = ["service", "size", "material", "location", "timeline"]
-MAX_ASKS = {"service": 2, "size": 1, "material": 1, "location": 1, "timeline": 1}
+# Order = the order we ask in: service -> size -> design -> location.
+# material/timeline are opportunistic only (see MATERIALS/etc. in the system
+# prompt) - not part of the hard gate below.
+SLOT_ORDER = ["service", "size", "design", "location"]
+_SLOT_ATTR = {"service": "service", "size": "size", "design": "design_preference", "location": "location"}
+MAX_ASKS = {"service": 2, "size": 1, "design": 1}  # location is handled separately - see LOCATION_* below
+
+# location is a hard gate: nothing downstream (site-visit talk, consent, the
+# lead form) may proceed while it's still unknown, and unlike size/design a
+# customer who dodges the question (not the same as "I don't know") gets
+# re-asked - paced by turn count so the bot doesn't nag every single turn.
+LOCATION_MAX_ASKS = 3
+LOCATION_REASK_GAP = 2  # min turns between re-asks
 
 NOT_SERVED = (
     "bangalore", "bengaluru", "chikmagalur", "chikkamagaluru",
@@ -44,32 +54,44 @@ def _s(v: Any, limit: int = 120) -> str | None:
 class ConversationState:
     service: str | None = None
     purpose: str | None = None          # home / commercial
-    material: str | None = None         # MS / SS (only if the customer stated it)
+    material: str | None = None         # MS / SS (only if the customer stated it, opportunistic)
     size: str | None = None
+    design_preference: str | None = None  # "own" (has a photo/reference) or "recommend"
     location: str | None = None
-    timeline: str | None = None
+    timeline: str | None = None         # opportunistic only, not part of the hard gate
     has_design_reference: bool = False
     asked_price: bool = False           # latest message asks price/cost/rate
     wants_visit: bool = False
     agreed_to_quote: bool = False
     is_ack: bool = False                # latest message is just "ok/thanks"
+    contact_consent: bool | None = None  # None = not answered yet, once asked
+    preferred_time: str | None = None    # good time to call, once consent is given
 
     @classmethod
     def from_dict(cls, d: dict) -> "ConversationState":
         material = (_s(d.get("material")) or "").upper()
         purpose = (_s(d.get("purpose")) or "").lower()
+        design_pref = (_s(d.get("design_preference")) or "").lower()
+        has_design_reference = d.get("has_design_reference") is True
+        if design_pref not in ("own", "recommend"):
+            # a mentioned photo/reference implies "own" even if not phrased that way
+            design_pref = "own" if has_design_reference else None
+        consent = d.get("contact_consent")
         return cls(
             service=_s(d.get("service")),
             purpose=purpose if purpose in ("home", "commercial") else None,
             material=material if material in ("MS", "SS") else None,
             size=_s(d.get("size")),
+            design_preference=design_pref,
             location=_s(d.get("location")),
             timeline=_s(d.get("timeline")),
-            has_design_reference=d.get("has_design_reference") is True,
+            has_design_reference=has_design_reference,
             asked_price=d.get("asked_price") is True,
             wants_visit=d.get("wants_visit") is True,
             agreed_to_quote=d.get("agreed_to_quote") is True,
             is_ack=d.get("is_ack") is True,
+            contact_consent=consent if isinstance(consent, bool) else None,
+            preferred_time=_s(d.get("preferred_time")),
         )
 
     # ── derived ──
@@ -84,23 +106,17 @@ class ConversationState:
         return any(w in svc for w in REPAIR_WORDS)
 
     def filled(self) -> int:
-        return sum(bool(getattr(self, s)) for s in SLOT_ORDER)
+        return sum(bool(getattr(self, attr)) for attr in _SLOT_ATTR.values())
 
     def missing(self) -> list[str]:
-        out = []
-        for slot in SLOT_ORDER:
-            if getattr(self, slot):
-                continue
-            if slot == "material" and self.is_repair:
-                continue  # MS vs SS is irrelevant for a repair job
-            out.append(slot)
-        return out
+        return [slot for slot in SLOT_ORDER if not getattr(self, _SLOT_ATTR[slot])]
 
     def known_lines(self) -> list[str]:
         rows = [
             ("Wants", self.service), ("For", self.purpose),
             ("Material preference", self.material), ("Size", self.size),
-            ("Location", self.location), ("Timeline", self.timeline),
+            ("Design", self.design_preference), ("Location", self.location),
+            ("Timeline", self.timeline), ("Best time to call", self.preferred_time),
         ]
         lines = [f"{k}: {v}" for k, v in rows if v]
         if self.has_design_reference:
@@ -121,6 +137,10 @@ class Session:
     form_shows: int = 0
     last_form_turn: int = -99
     asked: dict[str, int] = field(default_factory=dict)
+    asked_turn: dict[str, int] = field(default_factory=dict)  # last turn each slot was asked (pacing)
+    consent_asked: bool = False
+    consent_declined: bool = False
+    time_asked: bool = False
     phone_saved: bool = False
     touched: float = field(default_factory=time.time)
 
@@ -148,7 +168,8 @@ def get_session(visitor_id: str) -> Session:
 # ── the decision ────────────────────────────────────────────────────────────
 @dataclass
 class Plan:
-    mode: str = "normal"       # normal | ack | out_of_area | phone_saved
+    # normal | ack | out_of_area | phone_saved | ask_consent | consent_declined | ask_preferred_time
+    mode: str = "normal"
     show_form: bool = False
     ask: str | None = None     # slot to ask about this turn
     reason: str = ""           # why (shown in the debug dashboard)
@@ -163,7 +184,15 @@ def make_plan(
     form_shown_flag: bool = False,
     phone_saved_now: bool = False,
 ) -> Plan:
-    """Decide what the bot does this turn. Pure rules, no LLM."""
+    """
+    Decide what the bot does this turn. Pure rules, no LLM.
+
+    Strictly sequential: service -> size -> design -> location, then a
+    permission check, then "what's a good time to call", and only then the
+    lead form. A customer who types their own phone number mid-chat still
+    short-circuits straight to phone_saved (see turn.py) - this gate is only
+    for the bot-initiated path.
+    """
     if phone_saved_now:
         return Plan(mode="phone_saved", reason="customer typed their number")
     if state.out_of_area:
@@ -172,31 +201,64 @@ def make_plan(
         return Plan(mode="ack", reason="pure acknowledgement")
     if lead_captured:
         return Plan(reason="lead already captured, just help")
+    if session.consent_declined:
+        return Plan(reason="customer declined to share contact, just help")
 
     # Frontend told us a form was already shown but we have no memory of it
     # (e.g. server restarted): treat it as shown one turn ago.
     if form_shown_flag and session.form_shows == 0:
         session.form_shows, session.last_form_turn = 1, turn - 1
 
-    has_intent_signal = (
-        state.asked_price or state.wants_visit or state.agreed_to_quote
-        or bool(state.size) or bool(state.timeline)
-    )
-    # "how much?" with no idea what they want is not a lead yet: ask what first.
-    hot = bool(state.service or state.wants_visit) and has_intent_signal
-    warm = bool(state.service) and state.filled() >= 3 and turn >= 3
+    # ── Step 1: the four info slots, in order ──
+    for slot in SLOT_ORDER:
+        if getattr(state, _SLOT_ATTR[slot]):
+            continue
 
+        if slot == "location":
+            # hard gate: no promises, no site-visit talk, no lead until this
+            # is answered - paced re-asks instead of a one-shot budget, so a
+            # dodge doesn't get silently skipped like it used to.
+            asked = session.asked.get("location", 0)
+            last_turn = session.asked_turn.get("location", -99)
+            if asked >= LOCATION_MAX_ASKS:
+                return Plan(reason="location still unknown after repeated asks")
+            if asked > 0 and turn - last_turn < LOCATION_REASK_GAP:
+                return Plan(reason="waiting before re-asking location")
+            session.asked["location"] = asked + 1
+            session.asked_turn["location"] = turn
+            return Plan(ask="location", reason="missing 'location' (hard gate)")
+
+        cap = MAX_ASKS[slot]
+        if session.asked.get(slot, 0) < cap:
+            session.asked[slot] = session.asked.get(slot, 0) + 1
+            return Plan(ask=slot, reason=f"missing '{slot}'")
+        # asked as many times as we will: don't push (e.g. size/design "not sure"), move on
+
+    # ── Step 2: ask permission before offering the contact form ──
+    if state.contact_consent is None:
+        if not session.consent_asked:
+            session.consent_asked = True
+            return Plan(mode="ask_consent", reason="info complete, asking permission to get contact")
+        return Plan(reason="waiting on consent answer")
+
+    if state.contact_consent is False:
+        session.consent_declined = True
+        return Plan(mode="consent_declined", reason="customer declined to share contact")
+
+    # ── Step 3: consent given - ask for a good time to call ──
+    if not state.preferred_time:
+        if not session.time_asked:
+            session.time_asked = True
+            return Plan(mode="ask_preferred_time", reason="consent given, asking preferred time")
+        return Plan(reason="waiting on preferred time answer")
+
+    # ── Step 4: everything in place - trigger the lead ──
     can_show = session.form_shows < 2 and (
         session.form_shows == 0 or turn - session.last_form_turn >= 4
     )
-    if can_show and (hot or warm):
-        return Plan(show_form=True, reason="hot: buying signal" if hot else "warm: engaged, enough detail")
-
-    for slot in state.missing():
-        if session.asked.get(slot, 0) < MAX_ASKS[slot]:
-            session.asked[slot] = session.asked.get(slot, 0) + 1
-            return Plan(ask=slot, reason=f"missing '{slot}'")
-    return Plan(reason="nothing left to ask")
+    if can_show:
+        return Plan(show_form=True, reason="consent + preferred time in hand, showing form")
+    return Plan(reason="form already shown, nothing new to do")
 
 
 # ── small helpers ───────────────────────────────────────────────────────────

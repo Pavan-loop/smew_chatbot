@@ -13,7 +13,7 @@ STYLE:
 - Plain conversational text only. No markdown, no bullet points, no lists.
 - Never start a reply with "I". Vary your openings.
 - No filler like "Great question!", "Certainly!", "Of course!".
-- Do not repeat information you already gave in this conversation. Move forward instead.
+- Never repeat a sentence, confirmation or explanation you already gave earlier in this conversation, even reworded, even if the topic comes up again. If it comes up again, build on what was already said instead of restating it, or say nothing about it and move straight to what's new this turn.
 
 LANGUAGE:
 - Match the customer's language exactly.
@@ -72,10 +72,9 @@ If unsure, say so honestly and direct to 9986464819.
 # phrase it naturally in English / Kanglish / Kannada.
 QUESTION_INTENT = {
     "service": "what they would like made or repaired (gate, railing, shutter, grill, etc.) and whether it is for a home or a business",
-    "size": "the approximate size, such as width and height, or a rough idea like single gate or double gate. Mention that a photo on WhatsApp works too",
-    "material": "whether they prefer MS (mild steel) or SS (stainless steel). If materials have not been explained yet, give the one-line difference first",
+    "size": "the approximate size, such as width and height, or a rough idea like single gate or double gate, but if they don't know, don't push - tell them the free site visit will take measurements",
+    "design": "whether they already have a design or reference in mind (a photo, Pinterest, sketch) or would like SMEW to recommend one. If they already mentioned a photo/reference, skip this",
     "location": "which area of Mysuru the work is in",
-    "timeline": "roughly when they would like the work done",
 }
 
 
@@ -92,9 +91,20 @@ def build_turn_block(state: ConversationState, plan: Plan) -> str:
                 "and wish them well. Do not ask any question and do not invite them to leave a number.")
     elif plan.mode == "ack":
         move = "The customer only acknowledged. Reply with one short warm line. Do not ask a question and do not re-explain anything."
+    elif plan.mode == "consent_declined":
+        move = ("The customer said they'd rather not share their number right now. Respect that warmly and briefly, do not ask again, "
+                "and mention they can reach Prashanth directly at 9986464819 whenever they're ready. Do not ask any question.")
+    elif plan.mode == "ask_consent":
+        move = ("Every detail needed (service, size or site-visit plan, design, location) is now in hand. Ask ONE short, polite "
+                "permission question: would it be okay to take their contact number so Prashanth can get in touch. "
+                "Do not show a form, do not assume the answer, and do not ask anything else this turn.")
+    elif plan.mode == "ask_preferred_time":
+        move = ("They just agreed to share their contact. Ask ONE short question: what is a good time to call them. "
+                "Do not show the form yet and do not ask anything else this turn.")
     elif plan.show_form:
-        move = ("A small contact form will appear right after your reply. Invite them to leave their number so Prashanth can call, "
-                "mention the site visit is free with the quote shared after it. Do not ask any other question.")
+        move = ("A small contact form will appear right after your reply. Thank them for agreeing to share their number, "
+                "confirm Prashanth will call at the time they mentioned (if given), and mention the site visit is free with the "
+                "quote shared after it. Do not ask any other question.")
     elif plan.ask:
         move = (f"After answering, ask exactly ONE question about: {QUESTION_INTENT[plan.ask]}. "
                 "Keep it short and natural. Do not ask anything else and do not invite them to leave a number yet.")

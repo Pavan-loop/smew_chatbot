@@ -20,10 +20,13 @@ Return ONE JSON object and nothing else. Use only what the CUSTOMER said or clea
   "location": area or town they mentioned, e.g. "Vijayanagar, Mysuru", or null,
   "timeline": when they want it done / a deadline, as said, or null,
   "has_design_reference": true if they mention a photo, design, Pinterest or reference image, else false,
+  "design_preference": "own" if they already have a design/reference/photo in mind or a specific look they described, "recommend" if they said they don't have one and want a suggestion (e.g. "you decide", "whatever you recommend", "no idea, suggest something"), else null,
   "asked_price": true ONLY if the LATEST customer message asks about price, cost, rate or estimate,
   "wants_visit": true if at any point they asked for or agreed to a site visit or measurement,
   "agreed_to_quote": true if at any point they agreed to receive a quote,
-  "is_ack": true ONLY if the LATEST customer message is a closing acknowledgement with nothing else (thanks, ok noted, fine, cool). A yes / yeah / sure / okay in reply to a question or offer from the assistant is an ANSWER, not an acknowledgement: set is_ack false, and if the assistant had offered a site visit or quote, set wants_visit or agreed_to_quote to true.
+  "is_ack": true ONLY if the LATEST customer message is a closing acknowledgement with nothing else (thanks, ok noted, fine, cool). A yes / yeah / sure / okay in reply to a question or offer from the assistant is an ANSWER, not an acknowledgement: set is_ack false, and if the assistant had offered a site visit or quote, set wants_visit or agreed_to_quote to true,
+  "contact_consent": true or false ONLY if the assistant's LAST message asked permission to take their contact number so someone can get in touch, and the latest customer message clearly answers that specific question (yes/sure/ok = true, no/not now/maybe later = false). If the assistant's last message did not ask that, or the customer's answer is ambiguous, use null,
+  "preferred_time": if the assistant's LAST message asked what a good time to call is, the customer's answer as they said it (e.g. "evenings after 6", "tomorrow morning"), else null
 }"""
 
 
