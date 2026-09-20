@@ -23,7 +23,7 @@ Return ONE JSON object and nothing else. Use only what the CUSTOMER said or clea
   "asked_price": true ONLY if the LATEST customer message asks about price, cost, rate or estimate,
   "wants_visit": true if at any point they asked for or agreed to a site visit or measurement,
   "agreed_to_quote": true if at any point they agreed to receive a quote,
-  "is_ack": true ONLY if the LATEST customer message is nothing but an acknowledgement (ok, thanks, fine, got it, hmm, cool)
+  "is_ack": true ONLY if the LATEST customer message is a closing acknowledgement with nothing else (thanks, ok noted, fine, cool). A yes / yeah / sure / okay in reply to a question or offer from the assistant is an ANSWER, not an acknowledgement: set is_ack false, and if the assistant had offered a site visit or quote, set wants_visit or agreed_to_quote to true.
 }"""
 
 

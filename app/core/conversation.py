@@ -168,7 +168,7 @@ def make_plan(
         return Plan(mode="phone_saved", reason="customer typed their number")
     if state.out_of_area:
         return Plan(mode="out_of_area", reason=f"location '{state.location}' not served")
-    if state.is_ack:
+    if state.is_ack and not (state.wants_visit or state.agreed_to_quote):
         return Plan(mode="ack", reason="pure acknowledgement")
     if lead_captured:
         return Plan(reason="lead already captured, just help")
