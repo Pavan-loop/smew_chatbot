@@ -9,7 +9,7 @@ class ToolCallEvent:
   name: str
   arguments: dict
 
-async def complete(message: list[dict]) -> dict:
+async def complete(message: list[dict]) -> str:
   async with httpx.AsyncClient(timeout=settings.llm_timout_seconds) as client:
     response = await client.post(
       f"{settings.openai_api_base}/chat/completions",
@@ -27,6 +27,32 @@ async def complete(message: list[dict]) -> dict:
     data = response.json()
     return data["choices"][0]["message"]["content"]
 
+async def complete_json(
+    messages: list[dict],
+    *,
+    max_tokens: int = 250,
+    timeout: float | None = None,
+) -> tuple[dict, dict]:
+  """One non-streaming call that must return a JSON object. Returns (data, usage)."""
+  async with httpx.AsyncClient(timeout=timeout or settings.llm_timout_seconds) as client:
+    response = await client.post(
+      f"{settings.openai_api_base}/chat/completions",
+      headers={
+        "Authorization": f"Bearer {settings.openai_api}",
+        "Content-Type": "application/json",
+      },
+      json={
+        "model": settings.extractor_model or settings.chat_model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": 0,
+        "response_format": {"type": "json_object"},
+      },
+    )
+    response.raise_for_status()
+    data = response.json()
+    return json.loads(data["choices"][0]["message"]["content"]), data.get("usage", {})
+
 async def stream(
     message: list[dict],
     tools: list[dict] | None = None
@@ -35,6 +61,7 @@ async def stream(
     "model": settings.chat_model,
     "messages": message,
     "max_tokens": 300,
+    "temperature": settings.chat_temperature,
     "stream": True,
   }
   if tools:

@@ -46,6 +46,7 @@ class TurnRecord:
     cost_usd: float
     duration_ms: float
     error: str | None
+    state: dict = field(default_factory=dict)   # extractor output + plan (for debugging)
 
     @property
     def ts_iso(self) -> str:
@@ -143,6 +144,7 @@ class AnalyticsStore:
                 "cost_usd":         t.cost_usd,
                 "duration_ms":      t.duration_ms,
                 "error":            t.error,
+                "state":            t.state,
                 "messages_sent":    [
                     {
                         "index":   m.index,

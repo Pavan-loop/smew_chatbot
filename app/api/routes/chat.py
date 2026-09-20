@@ -8,12 +8,10 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.core.store import (
-    MessageRecord, TurnRecord, ErrorRecord, store,
-    INPUT_COST_PER_M, OUTPUT_COST_PER_M
+    MessageRecord, store, INPUT_COST_PER_M, OUTPUT_COST_PER_M
 )
-from app.llm.openai_client import stream, ToolCallEvent
-from app.llm.tools import TOOLS
-from app.prompt.system import SYSTEM_PROMPT
+from app.core.turn import prepare_turn
+from app.llm.openai_client import stream
 
 router = APIRouter()
 
@@ -28,8 +26,9 @@ def _estimate_tokens(text: str) -> int:
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=500)
-    history: list[dict] = Field(default_factory=list)
-    lead_captured: bool = False
+    history: list[dict] = Field(default_factory=list, max_length=60)
+    lead_captured: bool = False   # customer already submitted the form
+    form_shown: bool = False      # optional: frontend already showed the form
 
 
 def sse(payload: dict) -> str:
@@ -41,60 +40,37 @@ async def event_stream(
     history: list[dict],
     visitor_id: str,
     lead_captured: bool,
+    form_shown: bool,
 ) -> AsyncIterator[str]:
     yield sse({"type": "visitor", "visitor_id": visitor_id})
 
-    lead_note = (
-        "\n\nNOTE: This Customer has already submitted their contact details "
-        "this session do not call capture_lead under any circumstances"
-        if lead_captured else ""
-    )
-    recent = history[-20:]
-    messages = (
-        [{"role": "system", "content": SYSTEM_PROMPT + lead_note}]
-        + recent
-        + [{"role": "user", "content": message}]
-    )
-
-    # ── build message records for the dashboard ──
-    msg_records = [
-        MessageRecord(
-            index=i,
-            role=m["role"],
-            content_preview=m["content"][:200].replace("\n", " "),
-            full_content=m["content"],
-            char_len=len(m["content"]),
-        )
-        for i, m in enumerate(messages)
-    ]
-
-    # estimate input tokens from total chars sent
-    tokens_in_est = sum(_estimate_tokens(m["content"]) for m in messages)
-
     turn_id = str(uuid.uuid4())[:8]
     t_start = time.time()
-
     reply_parts: list[str] = []
-    tool_fired: str | None = None
-    tool_args: dict = {}
     error_msg: str | None = None
+    ctx = None
+    shown_form = False
 
     try:
-        async for chunk in stream(
-            messages, tools=TOOLS if not lead_captured else None
-        ):
-            if isinstance(chunk, ToolCallEvent):
-                tool_fired = chunk.name
-                tool_args = chunk.arguments
-                yield sse({
-                    "type": "action",
-                    "action": "show_lead_form",
-                    "service": chunk.arguments.get("service"),
-                    "notes": chunk.arguments.get("notes"),
-                })
-            else:
+        # extractor call + planning happen before the first token
+        ctx = await prepare_turn(message, history, visitor_id, lead_captured, form_shown)
+
+        async for chunk in stream(ctx.messages):
+            if isinstance(chunk, str):
                 reply_parts.append(chunk)
                 yield sse({"type": "text", "text": chunk})
+
+        # The form pops AFTER the bot has spoken, so the customer never sees a bare form.
+        if ctx.plan.show_form:
+            shown_form = True
+            ctx.session.form_shows += 1
+            ctx.session.last_form_turn = ctx.turn
+            yield sse({
+                "type": "action",
+                "action": "show_lead_form",
+                "service": ctx.state.service,
+                "notes": ctx.state.summary() or None,
+            })
 
     except Exception as exc:
         error_msg = str(exc)
@@ -109,14 +85,14 @@ async def event_stream(
     finally:
         yield sse({"type": "done"})
 
-    # ── record the completed turn ──
+    # ── record the completed turn for the debug dashboard ──
     duration_ms = round((time.time() - t_start) * 1000, 1)
     full_reply = "".join(reply_parts)
-    tokens_out_est = _estimate_tokens(full_reply) if full_reply else 0
-    cost = (
-        (tokens_in_est  / 1_000_000) * INPUT_COST_PER_M +
-        (tokens_out_est / 1_000_000) * OUTPUT_COST_PER_M
-    )
+    msgs = ctx.messages if ctx else []
+    ex_usage = ctx.extractor_usage if ctx else {}
+    tokens_in = sum(_estimate_tokens(m["content"]) for m in msgs) + ex_usage.get("prompt_tokens", 0)
+    tokens_out = (_estimate_tokens(full_reply) if full_reply else 0) + ex_usage.get("completion_tokens", 0)
+    cost = (tokens_in / 1_000_000) * INPUT_COST_PER_M + (tokens_out / 1_000_000) * OUTPUT_COST_PER_M
 
     store.record_turn(
         id=turn_id,
@@ -124,17 +100,29 @@ async def event_stream(
         visitor_id=visitor_id,
         user_message=message,
         lead_captured_flag=lead_captured,
-        tools_active=not lead_captured,
-        history_turns=len(recent),
-        messages_sent=msg_records,
+        tools_active=bool(ctx and ctx.plan.show_form),
+        history_turns=len(ctx.history) if ctx else 0,
+        messages_sent=[
+            MessageRecord(
+                index=i, role=m["role"],
+                content_preview=m["content"][:200].replace("\n", " "),
+                full_content=m["content"], char_len=len(m["content"]),
+            )
+            for i, m in enumerate(msgs)
+        ],
         reply=full_reply,
-        tool_fired=tool_fired,
-        tool_args=tool_args,
-        tokens_in=tokens_in_est,
-        tokens_out=tokens_out_est,
+        tool_fired="show_lead_form" if shown_form else None,
+        tool_args={"service": ctx.state.service, "notes": ctx.state.summary()} if shown_form else {},
+        tokens_in=tokens_in,
+        tokens_out=tokens_out,
         cost_usd=round(cost, 6),
         duration_ms=duration_ms,
         error=error_msg,
+        state={
+            **(ctx.state.to_dict() if ctx else {}),
+            "_plan": {"mode": ctx.plan.mode, "ask": ctx.plan.ask,
+                      "show_form": ctx.plan.show_form, "why": ctx.plan.reason} if ctx else {},
+        },
     )
 
 
@@ -145,7 +133,7 @@ async def chat(
 ) -> StreamingResponse:
     visitor_id = x_visitor_id or str(uuid.uuid4())
     return StreamingResponse(
-        event_stream(body.message, body.history, visitor_id, body.lead_captured),
+        event_stream(body.message, body.history, visitor_id, body.lead_captured, body.form_shown),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",

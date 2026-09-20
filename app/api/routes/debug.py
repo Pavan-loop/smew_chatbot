@@ -4,17 +4,20 @@ Protected by a simple token so you don't expose traffic publicly.
 Add DEBUG_TOKEN to your Railway environment variables.
 """
 
-import os
+import secrets
+
 from fastapi import APIRouter, HTTPException, Query
+
+from app.core.config import settings
 from app.core.store import store
 
 router = APIRouter()
 
-DEBUG_TOKEN = os.getenv("DEBUG_TOKEN", "smew-debug-2026")
-
 
 def _check(token: str | None):
-    if token != DEBUG_TOKEN:
+    if not settings.debug_token:
+        raise HTTPException(status_code=503, detail="Debug endpoints disabled: set DEBUG_TOKEN")
+    if not secrets.compare_digest((token or "").encode(), settings.debug_token.encode()):
         raise HTTPException(status_code=401, detail="Invalid debug token")
 
 
