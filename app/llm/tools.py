@@ -4,13 +4,16 @@ TOOLS = [
         "function": {
             "name": "capture_lead",
             "description": (
-                    "Call this to collect the customer's contact details for a quote. "
-                    "Call it IMMEDIATELY when the customer shows buying intent — "
-                    "this includes asking about price, giving dimensions, mentioning a deadline, "
-                    "asking about a site visit, or agreeing to get a quote. "
-                    "When the customer agrees to a quote, call this tool as your FIRST action "
-                    "before writing any text. Do NOT explain anything before calling it. "
-                    "Do NOT ask follow-up questions. Just call the tool."
+                    "Do NOT call this for: opening messages, greetings, general statements "
+                    "of need ('I need a gate', 'I want railings'), browsing questions "
+                    "('do you make X', 'what do you offer'), service confirmations, "
+                    "material questions, or any message where the customer is still "
+                    "exploring — even if they sound interested. "
+                    "A customer saying they NEED something is not the same as asking "
+                    "HOW MUCH it costs or WHEN you can do it. "
+                    "Only fire when the conversation has moved from 'what do you offer' "
+                    "to 'I want to proceed' — signalled by price, dimensions, timeline, "
+                    "site visit, or explicit agreement to a quote."
             ),
             "parameters": {
                 "type": "object",
