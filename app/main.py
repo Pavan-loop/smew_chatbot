@@ -17,9 +17,15 @@ app.add_middleware(
 )
 
 
+import os
+
 @app.get("/healthz")
 async def liveness():
-    return {"status": "ok", "debug_token_set": bool(settings.debug_token)}
+    return {
+        "status": "ok",
+        "debug_token_set": bool(settings.debug_token),
+        "debug_env_names": [k for k in os.environ if "DEBUG" in k.upper()],
+    }
 
 
 app.include_router(chat_router, prefix="/api")
