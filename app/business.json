@@ -1,0 +1,21 @@
+{
+  "name": "Shree Manjunatha Engineering Works",
+  "short_name": "SMEW",
+  "owner": "Prashanth S",
+  "founder": "Somraj R",
+  "experience": "25+ years",
+  "address": "24/2, near Basaveshwara Temple, Kuppalur, Mysuru, Karnataka 570031",
+  "phone": "9986464819",
+  "whatsapp": "https://wa.me/919986464819",
+  "hours": "Monday to Saturday, 9 AM to 7 PM. Sundays: site visits only.",
+  "services": ["Main gates (MS and SS)", "Safety doors", "Rolling shutters (manual and motorised)", "Window grills", "Staircase railings", "Collapsible gates", "Compound walls", "Garage doors", "MS fabrication", "Steel structures (canopies, pergolas, warehouse frames)", "Repairs and welding", "Custom orders"],
+  "service_area": "Mysuru and nearby areas only. Confirm unfamiliar nearby places with Prashanth; do not assume all Karnataka is served.",
+  "not_served": ["Bangalore", "Bengaluru", "Chikmagalur", "Chikkamagaluru", "Mangalore", "Mangaluru", "Hassan"],
+  "materials": {"MS": "Strong and affordable; periodic repainting helps prevent rust. Used for gates, grills, shutters and compound walls.", "SS": "Rust-resistant; usually requires no painting; costs more. Used for railings, balconies and high-moisture areas."},
+  "finishing": "One coat of yellow oxide anti-rust primer. Powder coating and spray painting are not offered. For other finishes, ask Prashanth.",
+  "pricing_policy": "Never provide numerical prices, rates, ranges or estimates. Price depends on size, material and design. Site visit is free. Quotation is shared after the visit, not on the spot.",
+  "invoice_policy": "Standard quotations only; GST and tax invoices are not available. Answer honestly if explicitly asked.",
+  "custom_designs": "Accepts photos, Pinterest references and sketches via WhatsApp.",
+  "after_sales": "Contact Prashanth directly for concerns after installation.",
+  "never_promise": ["A numerical price or estimate", "A delivery or installation date", "A confirmed appointment without human confirmation", "A confirmed callback time", "A warranty or certification not listed here", "Notification delivery before it has succeeded"]
+}
