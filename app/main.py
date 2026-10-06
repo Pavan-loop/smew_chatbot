@@ -5,6 +5,7 @@ import io
 import json
 import logging
 import os
+import re
 import secrets
 import tempfile
 import time
@@ -18,7 +19,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from starlette.background import BackgroundTask
 
-from app.brain import merge, normalize_consent_reply, plan_turn, text, validated_reply
+from app.brain import (
+    conversational_reply,
+    design_suggestion,
+    merge,
+    normalize_consent_reply,
+    plan_turn,
+    text,
+    validated_reply,
+)
 from app.config import Settings
 from app.database import Database, RateExceeded
 from app.models import ChatRequest, LeadRequest, LeadUpdate
@@ -214,29 +223,56 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
         history = await asyncio.to_thread(database.history, sid)
         try:
             async with asyncio.timeout(50):
-                patch, usage = await application.state.provider.extract(
-                    history, body.message, memory, business
-                )
-                await asyncio.to_thread(database.record_usage, settings.extractor_model, usage)
                 memory.turn += 1
-                patch = normalize_consent_reply(memory, patch, body.message)
-                merge(memory, patch, body.language)
-                plan = plan_turn(memory, patch, business)
-                # Business-critical transitions use deterministic reviewed copy.
-                if plan.mode in ("consent", "time", "form", "out_of_area", "uncertain_area", "declined"):
-                    reply = text(memory.state.language, plan.mode)
-                    if patch.asks_price:
-                        reply = text(memory.state.language, "price") + " " + reply
+                language = "kn" if re.search(r"[\u0c80-\u0cff]", body.message) else body.language
+                reply = conversational_reply(memory, body.message, language)
+                show_form = False
+                if reply is not None:
+                    memory.state.language = language
                 else:
-                    reply, usage = await application.state.provider.reply(
-                        history, body.message, memory, text(memory.state.language, plan.mode), business
+                    patch, usage = await application.state.provider.extract(
+                        history, body.message, memory, business
                     )
-                    await asyncio.to_thread(database.record_usage, settings.chat_model, usage)
-                    reply, valid = validated_reply(reply, memory, plan)
-                    if not valid:
-                        await asyncio.to_thread(database.error, "reply_guardrail")
+                    await asyncio.to_thread(database.record_usage, settings.extractor_model, usage)
+                    patch = normalize_consent_reply(memory, patch, body.message)
+                    merge(memory, patch, body.language)
+                    plan = plan_turn(memory, patch, business)
+                    show_form = plan.show_form
+                    suggest = patch.design_preference == "recommend" and plan.mode not in (
+                        "out_of_area",
+                        "uncertain_area",
+                        "declined",
+                    )
+                    needs_product = plan.mode == "service" and bool(patch.service or patch.purpose)
+                    # Reviewed replies govern contact permission and explicit design suggestions.
+                    if (
+                        suggest
+                        or needs_product
+                        or plan.mode
+                        in (
+                            "consent",
+                            "time",
+                            "form",
+                            "out_of_area",
+                            "uncertain_area",
+                            "declined",
+                        )
+                    ):
+                        reply = text(memory.state.language, plan.mode)
+                        if suggest:
+                            reply = design_suggestion(memory) + " " + reply
+                        if patch.asks_price:
+                            reply = text(memory.state.language, "price") + " " + reply
+                    else:
+                        reply, usage = await application.state.provider.reply(
+                            history, body.message, memory, text(memory.state.language, plan.mode), business
+                        )
+                        await asyncio.to_thread(database.record_usage, settings.chat_model, usage)
+                        reply, valid = validated_reply(reply, memory, plan)
+                        if not valid:
+                            await asyncio.to_thread(database.error, "reply_guardrail")
                 events = [{"type": "text", "text": reply, "language": memory.state.language}]
-                if plan.show_form:
+                if show_form:
                     events.append(
                         {
                             "type": "action",

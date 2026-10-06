@@ -23,6 +23,15 @@ COPY = {
         "uncertain_area": "Prashanth can confirm whether your area is covered. Please contact him at 9986464819.",
         "ack": "You're welcome!",
         "help": "For specific requirements, you can contact Prashanth at 9986464819.",
+        "closing": "Thanks for contacting SMEW. You can return here whenever you need fabrication help.",
+        "pending_ack": "You're welcome! To request a callback, submit your number and consent using the form above.",
+        "memory": "I can use details from this chat, but I can't identify you across separate chats or devices.",
+        "remembered": "In this chat, you mentioned {details}. I can't identify you across separate chats or devices.",
+        "suggestion": "You could consider {designs}. Prashanth can review the design and suitable material during the site visit.",
+        "gate_design": "a simple vertical-bar gate",
+        "grill_design": "matching window grills",
+        "railing_design": "straight balcony or staircase railings",
+        "general_design": "a simple design with straight lines, or share a reference photo on WhatsApp",
     },
     "kn": {
         "greeting": "ನಮಸ್ಕಾರ! ಮೈಸೂರಿನಲ್ಲಿ ಗೇಟ್, ಗ್ರಿಲ್, ರೇಲಿಂಗ್ ಅಥವಾ ಇತರ ಸ್ಟೀಲ್ ಕೆಲಸಗಳ ಬಗ್ಗೆ ಕೇಳಬಹುದು.",
@@ -41,6 +50,15 @@ COPY = {
         "uncertain_area": "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಸೇವೆ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸಬಹುದು. 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ.",
         "ack": "ಧನ್ಯವಾದಗಳು!",
         "help": "ನಿಮ್ಮ ಕೆಲಸದ ವಿವರಗಳಿಗಾಗಿ ಪ್ರಶಾಂತ್ ಅವರನ್ನು 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ ಸಂಪರ್ಕಿಸಬಹುದು.",
+        "closing": "SMEW ಅನ್ನು ಸಂಪರ್ಕಿಸಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಸಹಾಯ ಬೇಕಾದಾಗ ಮತ್ತೆ ಇಲ್ಲಿ ಕೇಳಬಹುದು.",
+        "pending_ack": "ಧನ್ಯವಾದಗಳು! ಕರೆ ವಿನಂತಿಗಾಗಿ ಮೇಲಿನ ಫಾರ್ಮ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಸಂಖ್ಯೆ ಮತ್ತು ಸಂಪರ್ಕಿಸಲು ಒಪ್ಪಿಗೆ ನೀಡಿ.",
+        "memory": "ಈ ಚಾಟ್‌ನ ವಿವರಗಳನ್ನು ಬಳಸಬಹುದು. ಆದರೆ ಬೇರೆ ಚಾಟ್ ಅಥವಾ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+        "remembered": "ಈ ಚಾಟ್‌ನಲ್ಲಿ ನೀವು {details} ಬಗ್ಗೆ ತಿಳಿಸಿದ್ದೀರಿ. ಬೇರೆ ಚಾಟ್ ಅಥವಾ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
+        "suggestion": "{designs} ಪರಿಗಣಿಸಬಹುದು. ಸ್ಥಳ ಪರಿಶೀಲನೆಯ ವೇಳೆ ಪ್ರಶಾಂತ್ ಅವರು ವಿನ್ಯಾಸ ಮತ್ತು ಸೂಕ್ತ ಮೆಟೀರಿಯಲ್ ಬಗ್ಗೆ ಸಲಹೆ ನೀಡಬಹುದು.",
+        "gate_design": "ಸರಳವಾದ ಲಂಬ ಕಂಬಿಗಳ ಗೇಟ್",
+        "grill_design": "ಅದಕ್ಕೆ ಹೊಂದುವ ಕಿಟಕಿ ಗ್ರಿಲ್‌ಗಳು",
+        "railing_design": "ಬಾಲ್ಕನಿ ಅಥವಾ ಮೆಟ್ಟಿಲಿಗೆ ಸರಳ ನೇರ ರೇಲಿಂಗ್‌ಗಳು",
+        "general_design": "ಸರಳ ನೇರ ರೇಖೆಗಳ ವಿನ್ಯಾಸ; ಅಥವಾ WhatsApp ಮೂಲಕ ಮಾದರಿ ಫೋಟೋ ಹಂಚಿಕೊಳ್ಳಬಹುದು",
     },
     "kanglish": {
         "greeting": "Namaskara! Mysurinali gate, grill, railing athava bere steel kelasa bagge kelabahudu.",
@@ -59,6 +77,15 @@ COPY = {
         "uncertain_area": "Nimma area cover aagutta anta Prashanth avaru confirm madtare. 9986464819 ge contact madi.",
         "ack": "Dhanyavadagalu!",
         "help": "Nimma requirement bagge Prashanth avarige 9986464819 ge contact madi.",
+        "closing": "SMEW contact madiddakke dhanyavadagalu. Fabrication help bekadaga matte illi keli.",
+        "pending_ack": "Dhanyavadagalu! Callback bekandre melina form alli nimma number mattu contact consent kodi.",
+        "memory": "Ee chat details use madabahudu. Bere chat athava device alli nimmanu guruthisoke aagalla.",
+        "remembered": "Ee chat alli neevu {details} bagge heliddira. Bere chat athava device alli nimmanu guruthisoke aagalla.",
+        "suggestion": "{designs} consider madabahudu. Site visit time alli Prashanth avaru design mattu suitable material bagge suggest madabahudu.",
+        "gate_design": "simple vertical-bar gate",
+        "grill_design": "matching window grills",
+        "railing_design": "balcony athava staircase ge simple straight railings",
+        "general_design": "simple straight-line design; athava WhatsApp alli reference photo share madabahudu",
     },
 }
 
@@ -71,6 +98,84 @@ def text(language: str, key: str) -> str:
 class Plan:
     mode: str
     show_form: bool = False
+
+
+def short_answer(message: str) -> str:
+    return re.sub(r"\s+", " ", message.casefold().strip()).rstrip(" .!,?")
+
+
+def conversational_reply(memory: SessionMemory, message: str, language: str) -> str | None:
+    """Handle exact social replies without advancing enquiry or contact permission."""
+    answer = short_answer(message)
+    if answer in {
+        "do you remember me",
+        "remember me",
+        "do you remember our conversation",
+        "do you remember what i told you",
+        "nannannu nenapideya",
+        "ನಾನು ನೆನಪಿದ್ದೀನಾ",
+    }:
+        details = [value for value in (memory.state.service, memory.state.location) if value]
+        if details:
+            return text(language, "remembered").format(details=", ".join(details))
+        return text(language, "memory")
+    if answer in {"hi", "hey", "hello", "namaskara", "ನಮಸ್ಕಾರ"}:
+        return text(language, "greeting")
+    if answer in {
+        "nothing",
+        "nothing else",
+        "that's all",
+        "that is all",
+        "no more questions",
+        "no further questions",
+        "bye",
+        "goodbye",
+        "ashte",
+        "bere enu illa",
+        "ಅಷ್ಟೇ",
+        "ಇನ್ನೇನೂ ಇಲ್ಲ",
+    }:
+        return text(language, "closing")
+    # "No thanks" to a pending consent question must still be a refusal.
+    if memory.awaiting not in ("consent", "time") and answer in {
+        "thank you",
+        "thanks",
+        "thanks bro",
+        "thank you bro",
+        "dhanyavadagalu",
+        "ಧನ್ಯವಾದಗಳು",
+    }:
+        key = "pending_ack" if memory.form_shows and not memory.lead_saved else "ack"
+        return text(language, key)
+    return None
+
+
+def design_suggestion(memory: SessionMemory) -> str:
+    service = (memory.state.service or "").casefold()
+    keys = []
+    for words, key in (
+        (("gate",), "gate_design"),
+        (("window", "grill"), "grill_design"),
+        (("railing", "balcony", "staircase"), "railing_design"),
+    ):
+        if any(word in service for word in words):
+            keys.append(key)
+    designs = ", ".join(text(memory.state.language, key) for key in keys or ["general_design"])
+    return text(memory.state.language, "suggestion").format(designs=designs)
+
+
+GENERIC_SERVICES = {
+    "fabrication",
+    "fabrication assistance",
+    "fabrication work",
+    "steel fabrication",
+    "home fabrication",
+    "house fabrication",
+    "ms fabrication",
+    "ss fabrication",
+    "custom order",
+    "general fabrication",
+}
 
 
 def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: str) -> Extraction:
@@ -118,6 +223,10 @@ def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: s
 
 
 def merge(memory: SessionMemory, patch: Extraction, requested_language: str):
+    if patch.service and short_answer(patch.service) in GENERIC_SERVICES:
+        patch = patch.model_copy(update={"service": None})
+    if memory.state.service and short_answer(memory.state.service) in GENERIC_SERVICES:
+        memory.state.service = None
     previous_service = memory.state.service
     # A changed product invalidates its size/design, not the customer's location.
     if patch.service and previous_service and patch.service.lower() != previous_service.lower():
@@ -181,6 +290,10 @@ def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
             if asked and memory.turn - memory.asked_turn.get(slot, -100) < 2:
                 return Plan("help")
         elif asked >= cap:
+            if slot == "service":
+                # Do not ask for measurements of an unidentified product.
+                memory.awaiting = "service"
+                return Plan("service")
             continue
         memory.asked[slot] = asked + 1
         memory.asked_turn[slot] = memory.turn
