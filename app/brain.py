@@ -73,6 +73,50 @@ class Plan:
     show_form: bool = False
 
 
+def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: str) -> Extraction:
+    """Resolve clear short answers only to the pending contact-permission question."""
+    if memory.awaiting != "consent":
+        return patch
+    answer = re.sub(r"\s+", " ", message.casefold().strip()).rstrip(" .!,")
+    accepted = {
+        "yes",
+        "yes please",
+        "yes, please",
+        "yeah",
+        "yep",
+        "ok",
+        "okay",
+        "sure",
+        "go ahead",
+        "please do",
+        "houdu",
+        "howdu",
+        "haudu",
+        "sari",
+        "ಹೌದು",
+        "ಸರಿ",
+    }
+    declined = {
+        "no",
+        "no thanks",
+        "no, thanks",
+        "no thank you",
+        "no, thank you",
+        "not now",
+        "don't contact me",
+        "do not contact me",
+        "beda",
+        "illa",
+        "ಬೇಡ",
+        "ಇಲ್ಲ",
+    }
+    if answer in accepted:
+        return patch.model_copy(update={"contact_consent": True, "is_ack": False})
+    if answer in declined:
+        return patch.model_copy(update={"contact_consent": False, "is_ack": False})
+    return patch
+
+
 def merge(memory: SessionMemory, patch: Extraction, requested_language: str):
     previous_service = memory.state.service
     # A changed product invalidates its size/design, not the customer's location.

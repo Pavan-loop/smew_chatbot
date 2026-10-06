@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from starlette.background import BackgroundTask
 
-from app.brain import merge, plan_turn, text, validated_reply
+from app.brain import merge, normalize_consent_reply, plan_turn, text, validated_reply
 from app.config import Settings
 from app.database import Database, RateExceeded
 from app.models import ChatRequest, LeadRequest, LeadUpdate
@@ -219,6 +219,7 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 )
                 await asyncio.to_thread(database.record_usage, settings.extractor_model, usage)
                 memory.turn += 1
+                patch = normalize_consent_reply(memory, patch, body.message)
                 merge(memory, patch, body.language)
                 plan = plan_turn(memory, patch, business)
                 # Business-critical transitions use deterministic reviewed copy.
