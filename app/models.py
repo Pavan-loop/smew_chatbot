@@ -35,11 +35,14 @@ class State(BaseModel):
     language: Language = "en"
 
     def summary(self) -> str:
-        return "; ".join(
+        details = "; ".join(
             f"{k}: {v}"
             for k, v in self.model_dump().items()
             if v is not None and k not in ("language", "contact_consent", "area_status")
         )
+        if self.area_status == "uncertain":
+            details += "; service coverage: needs confirmation"
+        return details.lstrip("; ")
 
 
 class Extraction(BaseModel):

@@ -10,7 +10,7 @@ COPY = {
         "greeting": "Hello! Ask us about gates, grills, railings or other steel fabrication in Mysuru.",
         "failure": "The assistant is temporarily unavailable. You can call or WhatsApp Prashanth at 9986464819.",
         "saved": "Your callback request is saved. Prashanth will review your enquiry; the callback time will be confirmed by him.",
-        "price": "The price depends on size, material and design. The site visit is free, and the quote is shared after it.",
+        "price": "The price depends on size, material and design; the site visit is free, with a quote after the visit.",
         "service": "What would you like made or repaired?",
         "size": "Do you know the approximate size? If not, it can be measured during the site visit.",
         "design": "Do you have a design or reference, or would you like a suggestion?",
@@ -32,6 +32,12 @@ COPY = {
         "grill_design": "matching window grills",
         "railing_design": "straight balcony or staircase railings",
         "general_design": "a simple design with straight lines, or share a reference photo on WhatsApp",
+        "house": "We can help with the steel fabrication for your house.",
+        "unknown_size": "No problem—we can take measurements during the site visit.",
+        "location_city": "Which city is the work in—Mysuru or another city?",
+        "coverage_pending": "Prashanth will need to confirm whether we cover your area.",
+        "skylight_review": "Prashanth will need to review the skylight requirement before confirming whether we can take it up.",
+        "skylight_design_review": "Prashanth can review suitable materials and whether we can take up the skylight requirement.",
     },
     "kn": {
         "greeting": "ನಮಸ್ಕಾರ! ಮೈಸೂರಿನಲ್ಲಿ ಗೇಟ್, ಗ್ರಿಲ್, ರೇಲಿಂಗ್ ಅಥವಾ ಇತರ ಸ್ಟೀಲ್ ಕೆಲಸಗಳ ಬಗ್ಗೆ ಕೇಳಬಹುದು.",
@@ -59,6 +65,12 @@ COPY = {
         "grill_design": "ಅದಕ್ಕೆ ಹೊಂದುವ ಕಿಟಕಿ ಗ್ರಿಲ್‌ಗಳು",
         "railing_design": "ಬಾಲ್ಕನಿ ಅಥವಾ ಮೆಟ್ಟಿಲಿಗೆ ಸರಳ ನೇರ ರೇಲಿಂಗ್‌ಗಳು",
         "general_design": "ಸರಳ ನೇರ ರೇಖೆಗಳ ವಿನ್ಯಾಸ; ಅಥವಾ WhatsApp ಮೂಲಕ ಮಾದರಿ ಫೋಟೋ ಹಂಚಿಕೊಳ್ಳಬಹುದು",
+        "house": "ನಿಮ್ಮ ಮನೆಯ ಸ್ಟೀಲ್ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸಗಳ ಬಗ್ಗೆ ಸಹಾಯ ಮಾಡಬಹುದು.",
+        "unknown_size": "ಪರವಾಗಿಲ್ಲ—ಸ್ಥಳ ಪರಿಶೀಲನೆಯ ವೇಳೆ ಅಳತೆ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.",
+        "location_city": "ಕೆಲಸ ಯಾವ ನಗರದಲ್ಲಿದೆ—ಮೈಸೂರು ಅಥವಾ ಬೇರೆ ನಗರವೇ?",
+        "coverage_pending": "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಸೇವೆ ನೀಡಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸಬೇಕು.",
+        "skylight_review": "ಸ್ಕೈಲೈಟ್ ಕೆಲಸವನ್ನು ಕೈಗೊಳ್ಳಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಖಚಿತಪಡಿಸಬೇಕು.",
+        "skylight_design_review": "ಸೂಕ್ತ ಮೆಟೀರಿಯಲ್ ಮತ್ತು ಸ್ಕೈಲೈಟ್ ಕೆಲಸವನ್ನು ಕೈಗೊಳ್ಳಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಪರಿಶೀಲಿಸಬಹುದು.",
     },
     "kanglish": {
         "greeting": "Namaskara! Mysurinali gate, grill, railing athava bere steel kelasa bagge kelabahudu.",
@@ -86,6 +98,12 @@ COPY = {
         "grill_design": "matching window grills",
         "railing_design": "balcony athava staircase ge simple straight railings",
         "general_design": "simple straight-line design; athava WhatsApp alli reference photo share madabahudu",
+        "house": "Nimma mane steel fabrication kelasa bagge help madabahudu.",
+        "unknown_size": "Parvagilla—site visit time alli measurements thagobahudu.",
+        "location_city": "Kelasa yaava city alli ide—Mysuru athava bere city na?",
+        "coverage_pending": "Nimma area cover madabahuda anta Prashanth avaru confirm madabeku.",
+        "skylight_review": "Skylight kelasa thagobahuda anta Prashanth avaru requirement nodi confirm madabeku.",
+        "skylight_design_review": "Suitable material mattu skylight kelasa thagobahuda anta Prashanth avaru review madabahudu.",
     },
 }
 
@@ -161,7 +179,13 @@ def design_suggestion(memory: SessionMemory) -> str:
         if any(word in service for word in words):
             keys.append(key)
     designs = ", ".join(text(memory.state.language, key) for key in keys or ["general_design"])
-    return text(memory.state.language, "suggestion").format(designs=designs)
+    suggestion = text(memory.state.language, "suggestion").format(designs=designs)
+    if "skylight" in service:
+        # Do not invent glazing or skylight services from a customer's request.
+        suggestion = (
+            suggestion.split(". ", 1)[0] + ". " + text(memory.state.language, "skylight_design_review")
+        )
+    return suggestion
 
 
 GENERIC_SERVICES = {
@@ -176,6 +200,171 @@ GENERIC_SERVICES = {
     "custom order",
     "general fabrication",
 }
+
+
+UNKNOWN_ANSWERS = {
+    "i don't know",
+    "i dont know",
+    "don't know",
+    "dont know",
+    "not sure",
+    "no idea",
+    "idk",
+    "not decided",
+    "gothilla",
+    "gotilla",
+    "ಗೊತ್ತಿಲ್ಲ",
+    "ತಿಳಿದಿಲ್ಲ",
+}
+SHORT_ACKS = {
+    "yes",
+    "yeah",
+    "yep",
+    "okay",
+    "ok",
+    "sure",
+    "thanks",
+    "thank you",
+    "sari",
+    "houdu",
+    "ಸರಿ",
+    "ಹೌದು",
+    "ಧನ್ಯವಾದಗಳು",
+}
+PRICE_INTENT = re.compile(
+    r"\b(?:price\w*|cost\w*|estimat\w*|quot(?:e|ation)\w*|rates?|charges?|eshtu)\b|\bhow much\b|ಬೆಲೆ|ವೆಚ್ಚ|ಅಂದಾಜು|ದರ|ಎಷ್ಟು",
+    re.I,
+)
+DESIGN_INTENT = re.compile(r"\b(?:suggest\w*|suggession|recommend\w*)\b|ಸಲಹೆ|ಸೂಚಿಸಿ", re.I)
+PRODUCT_WORDS = re.compile(
+    r"\b(?:gate\w*|grill\w*|window\w*|railing\w*|balcon\w*|skylight\w*|shutter\w*|door\w*|"
+    r"stair\w*|canop\w*|pergola\w*|roof\w*|weld\w*|repair\w*)\b|ಗೇಟ್|ಗ್ರಿಲ್|ಕಿಟಕಿ|ರೇಲಿಂಗ್|ಬಾಲ್ಕನಿ|ಶಟರ್",
+    re.I,
+)
+MYSURU = re.compile(r"\b(?:mysuru|mysore|mysurinali|mysuralli)\b|ಮೈಸೂರು|ಮೈಸೂರಿನಲ್ಲಿ", re.I)
+SHARED_AREA = re.compile(r"\b(?:j\.?\s*p\.?\s*nagar|jayanagar|vijayanagar)\b", re.I)
+
+
+def business_question(message: str) -> bool:
+    """Allow factual side questions without turning ordinary slot answers into model prose."""
+    question = re.search(r"\?|^(?:what|which|how|why|when|where|can|do|does|is|are)\b", message, re.I)
+    topic = re.search(
+        r"\b(?:hours?|open\w*|close\w*|materials?|ms|ss|steel|rust|finish\w*|paint\w*|powder|"
+        r"gst|invoice\w*|tax|warrant\w*|certif\w*|services?|offer\w*|whatsapp|phone|"
+        r"repair\w*|deliver\w*|install\w*|visit\w*|gate\w*|grill\w*|railing\w*|window\w*|skylight\w*)\b|ಮೆಟೀರಿಯಲ್|ಸಮಯ|ಬಣ್ಣ|ಜಿಎಸ್‌ಟಿ",
+        message,
+        re.I,
+    )
+    return bool(question and topic)
+
+
+def normalize_turn(memory: SessionMemory, patch: Extraction, message: str, business: dict) -> Extraction:
+    """Keep current-turn acts tied to current text, even if a model echoes old facts."""
+    answer = short_answer(message)
+    updates = {
+        "asks_price": bool(PRICE_INTENT.search(message)),
+        "is_ack": answer in SHORT_ACKS and memory.awaiting is None,
+        "design_preference": None,
+    }
+    if business_question(message) and memory.awaiting == "consent":
+        updates["contact_consent"] = None
+    if patch.purpose == "home" and not re.search(r"\b(?:house|home|mane)\b|ಮನೆ", message, re.I):
+        updates["purpose"] = None
+    if patch.purpose == "commercial" and not re.search(
+        r"\b(?:commercial|shop|office|warehouse|factory)\b|ಅಂಗಡಿ|ಕಚೇರಿ", message, re.I
+    ):
+        updates["purpose"] = None
+    negative_design = re.search(r"(?:no|not|don't|do not).{0,15}(?:suggest|recommend)", message, re.I)
+    if DESIGN_INTENT.search(message) and not negative_design and not answer.startswith("thanks for"):
+        updates["design_preference"] = "recommend"
+    elif patch.design_preference == "own" and re.search(
+        r"design|reference|photo|sketch|pinterest|ವಿನ್ಯಾಸ|ಫೋಟೋ", message, re.I
+    ):
+        updates["design_preference"] = "own"
+    # Short answers, measurements and place names cannot silently change the product list.
+    if memory.state.service and not PRODUCT_WORDS.search(message):
+        updates["service"] = None
+    if answer in UNKNOWN_ANSWERS and memory.awaiting == "size":
+        updates["size"] = "To be measured during the site visit"
+    if answer in UNKNOWN_ANSWERS or answer in SHORT_ACKS:
+        updates["location"] = None
+        updates["area_status"] = None
+    elif patch.location is None:
+        updates["area_status"] = None
+    # Never infer Bengaluru from "JP Nagar" alone. The customer must identify the city.
+    excluded = next(
+        (
+            city
+            for city in business["not_served"]
+            if re.search(r"\b" + re.escape(city) + r"\b", message, re.I)
+        ),
+        None,
+    )
+    is_place_answer = memory.awaiting in ("location", "location_city")
+    if not business_question(message):
+        if excluded:
+            updates.update(location=message.strip(), area_status="unserved")
+        elif MYSURU.search(message) and (is_place_answer or patch.location):
+            previous = memory.state.location
+            location = patch.location or "Mysuru"
+            if memory.awaiting == "location_city" and previous and not MYSURU.search(previous):
+                location = previous + ", Mysuru"
+            updates.update(location=location, area_status="served")
+        elif SHARED_AREA.search(message):
+            area = SHARED_AREA.search(message).group(0)
+            if memory.state.location and MYSURU.search(memory.state.location):
+                updates.update(location=area + ", Mysuru", area_status="served")
+            else:
+                updates.update(location=area, area_status="uncertain")
+    if memory.awaiting == "location_city" and answer in UNKNOWN_ANSWERS:
+        # The owner may review an uncertain enquiry; this does not confirm service coverage.
+        memory.asked["location_city"] = 2
+    if memory.awaiting == "location" and answer in UNKNOWN_ANSWERS:
+        updates.update(location="Not provided", area_status="uncertain")
+        memory.asked["location_city"] = 2
+    return normalize_consent_reply(memory, patch.model_copy(update=updates), message)
+
+
+REVIEWED_MODES = {
+    "service",
+    "size",
+    "design",
+    "location",
+    "location_city",
+    "consent",
+    "time",
+    "form",
+    "out_of_area",
+    "uncertain_area",
+    "declined",
+    "ack",
+}
+
+
+def reviewed_reply(
+    memory: SessionMemory, patch: Extraction, plan: Plan, message: str, previous_awaiting: str | None
+) -> str:
+    language = memory.state.language
+    parts = []
+    if plan.mode not in ("out_of_area", "declined"):
+        if patch.asks_price:
+            parts.append(text(language, "price"))
+        if "skylight" in message.casefold() and patch.service and patch.design_preference != "recommend":
+            parts.append(text(language, "skylight_review"))
+        if plan.mode == "service" and patch.purpose == "home" and not memory.state.service:
+            parts.append(text(language, "house"))
+        if previous_awaiting == "size" and short_answer(message) in UNKNOWN_ANSWERS:
+            parts.append(text(language, "unknown_size"))
+        if (
+            patch.design_preference == "recommend"
+            and memory.state.service
+            and plan.mode not in ("location_city", "uncertain_area", "ack")
+        ):
+            parts.append(design_suggestion(memory))
+        if plan.mode == "consent" and memory.state.area_status == "uncertain":
+            parts.append(text(language, "coverage_pending"))
+    parts.append(text(language, plan.mode))
+    return " ".join(parts)
 
 
 def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: str) -> Extraction:
@@ -261,11 +450,17 @@ def merge(memory: SessionMemory, patch: Extraction, requested_language: str):
     )
 
 
+def outside_service_area(memory: SessionMemory, business: dict) -> bool:
+    location = memory.state.location or ""
+    return memory.state.area_status == "unserved" or any(
+        re.search(r"\b" + re.escape(city) + r"\b", location, re.I) for city in business["not_served"]
+    )
+
+
 def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
     state = memory.state
-    location = (state.location or "").lower()
-    denied = any(re.search(r"\b" + re.escape(c.lower()) + r"\b", location) for c in business["not_served"])
-    if denied or state.area_status == "unserved":
+    if outside_service_area(memory, business):
+        state.area_status = "unserved"
         memory.awaiting = None
         return Plan("out_of_area")
     if memory.lead_saved:
@@ -273,7 +468,7 @@ def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
     if state.contact_consent is False:
         memory.awaiting = None
         return Plan("declined")
-    if patch.is_ack and memory.awaiting not in ("consent", "time"):
+    if patch.is_ack and memory.awaiting is None:
         return Plan("ack")
     for slot, attr, cap in (
         ("service", "service", 2),
@@ -286,9 +481,10 @@ def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
         asked = memory.asked.get(slot, 0)
         if slot == "location":
             if asked >= cap:
-                return Plan("uncertain_area")
-            if asked and memory.turn - memory.asked_turn.get(slot, -100) < 2:
-                return Plan("help")
+                state.location = "Not provided"
+                state.area_status = "uncertain"
+                memory.asked["location_city"] = 2
+                continue
         elif asked >= cap:
             if slot == "service":
                 # Do not ask for measurements of an unidentified product.
@@ -299,8 +495,10 @@ def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
         memory.asked_turn[slot] = memory.turn
         memory.awaiting = slot
         return Plan(slot)
-    if state.area_status != "served":
-        return Plan("uncertain_area")
+    if state.area_status != "served" and memory.asked.get("location_city", 0) < 2:
+        memory.asked["location_city"] = memory.asked.get("location_city", 0) + 1
+        memory.awaiting = "location_city"
+        return Plan("location_city")
     if state.contact_consent is None:
         memory.awaiting = "consent"
         return Plan("consent")
@@ -342,8 +540,5 @@ def validated_reply(reply: str, memory: SessionMemory, plan: Plan) -> tuple[str,
         or PROMISE_RE.search(reply)
     ):
         return text(memory.state.language, "price") + " " + text(memory.state.language, plan.mode), False
-    # Lead collection questions, consent, booking promises and area refusals use
-    # reviewed templates. LLM prose cannot override these state transitions.
-    if plan.mode in ("consent", "time", "form", "out_of_area", "uncertain_area", "declined"):
-        return text(memory.state.language, plan.mode), True
+    # Main owns reviewed transitions and questions; this guard checks factual model prose.
     return reply.strip(), True

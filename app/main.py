@@ -20,11 +20,14 @@ from fastapi.responses import FileResponse, JSONResponse, Response, StreamingRes
 from starlette.background import BackgroundTask
 
 from app.brain import (
+    REVIEWED_MODES,
+    business_question,
     conversational_reply,
-    design_suggestion,
     merge,
-    normalize_consent_reply,
+    normalize_turn,
+    outside_service_area,
     plan_turn,
+    reviewed_reply,
     text,
     validated_reply,
 )
@@ -230,47 +233,47 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 if reply is not None:
                     memory.state.language = language
                 else:
+                    previous_awaiting = memory.awaiting
                     patch, usage = await application.state.provider.extract(
                         history, body.message, memory, business
                     )
                     await asyncio.to_thread(database.record_usage, settings.extractor_model, usage)
-                    patch = normalize_consent_reply(memory, patch, body.message)
+                    patch = normalize_turn(memory, patch, body.message, business)
                     merge(memory, patch, body.language)
                     plan = plan_turn(memory, patch, business)
                     show_form = plan.show_form
-                    suggest = patch.design_preference == "recommend" and plan.mode not in (
-                        "out_of_area",
-                        "uncertain_area",
-                        "declined",
+                    needs_answer = business_question(body.message)
+                    use_reviewed = (
+                        patch.asks_price
+                        or patch.design_preference == "recommend"
+                        or plan.mode in ("out_of_area", "declined", "ack")
+                        or (plan.mode in REVIEWED_MODES and not needs_answer)
                     )
-                    needs_product = plan.mode == "service" and bool(patch.service or patch.purpose)
-                    # Reviewed replies govern contact permission and explicit design suggestions.
-                    if (
-                        suggest
-                        or needs_product
-                        or plan.mode
-                        in (
-                            "consent",
-                            "time",
-                            "form",
-                            "out_of_area",
-                            "uncertain_area",
-                            "declined",
-                        )
-                    ):
-                        reply = text(memory.state.language, plan.mode)
-                        if suggest:
-                            reply = design_suggestion(memory) + " " + reply
-                        if patch.asks_price:
-                            reply = text(memory.state.language, "price") + " " + reply
+                    if use_reviewed:
+                        reply = reviewed_reply(memory, patch, plan, body.message, previous_awaiting)
                     else:
                         reply, usage = await application.state.provider.reply(
-                            history, body.message, memory, text(memory.state.language, plan.mode), business
+                            history, body.message, memory, "", business
                         )
                         await asyncio.to_thread(database.record_usage, settings.chat_model, usage)
                         reply, valid = validated_reply(reply, memory, plan)
                         if not valid:
                             await asyncio.to_thread(database.error, "reply_guardrail")
+                        else:
+                            # The model answers facts; the server owns the next enquiry question.
+                            answer = " ".join(
+                                sentence
+                                for sentence in re.split(r"(?<=[.!?])\s+", reply)
+                                if not sentence.rstrip().endswith("?")
+                            )
+                            followup = (
+                                reviewed_reply(memory, patch, plan, body.message, previous_awaiting)
+                                if plan.mode in REVIEWED_MODES
+                                else ""
+                            )
+                            reply = " ".join(part for part in (answer, followup) if part) or text(
+                                memory.state.language, "help"
+                            )
                 events = [{"type": "text", "text": reply, "language": memory.state.language}]
                 if show_form:
                     events.append(
@@ -379,7 +382,7 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
         async with lock:
             try:
                 memory = await asyncio.to_thread(database.load_session, sid)
-                if memory.state.area_status == "unserved":
+                if outside_service_area(memory, business):
                     raise HTTPException(422, "That location is outside our service area")
                 await asyncio.to_thread(
                     database.consume_limits, [(f"leads:session:{sid}", 86400, 5), ("leads:global", 86400, 30)]
