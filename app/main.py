@@ -21,6 +21,7 @@ from starlette.background import BackgroundTask
 
 from app.brain import (
     REVIEWED_MODES,
+    business_info_reply,
     business_question,
     conversational_reply,
     merge,
@@ -229,6 +230,8 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 memory.turn += 1
                 language = "kn" if re.search(r"[\u0c80-\u0cff]", body.message) else body.language
                 reply = conversational_reply(memory, body.message, language)
+                if reply is None:
+                    reply = business_info_reply(body.message, language, business)
                 show_form = False
                 if reply is not None:
                     memory.state.language = language

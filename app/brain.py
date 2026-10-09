@@ -158,6 +158,123 @@ def design_suggestion(memory: SessionMemory) -> str:
     return text(memory.state.language, "suggestion")
 
 
+BUSINESS_INFO_PATTERNS = {
+    "ceo": [
+        r"who(?: is|'s) (?:the |your |smew's )?ceo(?: of (?:smew|your company|the company))?",
+        r"(?:what is |what's )?(?:your |the )?ceo(?:'s)? name",
+        r"(?:nimma )?ceo (?:yaaru|ಯಾರು)",
+    ],
+    "owner": [
+        r"who(?: is|'s) (?:the |your )?owner(?: of (?:smew|your company|the company))?",
+        r"who owns (?:smew|this company|your company|the company)",
+        r"(?:nimma )?owner (?:yaaru|ಯಾರು)",
+        r"(?:ಕಂಪನಿಯ )?ಮಾಲೀಕರು ಯಾರು",
+    ],
+    "founder": [
+        r"who(?: is|'s) (?:the |your )?founder(?: of (?:smew|your company|the company))?",
+        r"who founded (?:smew|your company|the company)",
+        r"(?:nimma )?founder (?:yaaru|ಯಾರು)",
+        r"(?:ಕಂಪನಿಯ )?ಸ್ಥಾಪಕರು ಯಾರು",
+    ],
+    "services": [
+        r"what do you do",
+        r"(?:what|which) (?:services|work) (?:do|can) you (?:offer|provide|do)",
+        r"(?:what|which) services (?:are )?(?:available|offered)",
+        r"tell me (?:about your services|what you do)",
+        r"nimma (?:services|kelasa) (?:enu|yenu)",
+        r"neevu (?:enu|yenu) madtira",
+        r"ನೀವು (?:ಏನು|ಯಾವ ಕೆಲಸ) ಮಾಡುತ್ತೀರಿ",
+        r"ನಿಮ್ಮ ಸೇವೆಗಳು ಯಾವುವು",
+    ],
+    "identity": [
+        r"who are you",
+        r"(?:what is|what's) smew",
+        r"tell me about (?:smew|your company|the company)",
+        r"neevu yaaru",
+        r"ನೀವು ಯಾರು",
+    ],
+}
+
+BUSINESS_INFO_COPY = {
+    "en": {
+        "owner": "{owner} is the owner of {name}.",
+        "founder": "{founder} founded {name}.",
+        "ceo": "{ceo} is the CEO of {name}.",
+        "ceo_unknown": "I don't have a confirmed CEO name to share.",
+        "identity": "I'm the customer assistant for {name}. I can help with questions about our fabrication work and callback enquiries.",
+        "services": "We help with fabrication work, including {services}.",
+        "unknown": "I don't have confirmed information about that. Prashanth can help clarify it.",
+    },
+    "kn": {
+        "owner": "{name} ಸಂಸ್ಥೆಯ ಮಾಲೀಕರು {owner}.",
+        "founder": "{name} ಸಂಸ್ಥೆಯನ್ನು {founder} ಸ್ಥಾಪಿಸಿದರು.",
+        "ceo": "{name} ಸಂಸ್ಥೆಯ CEO {ceo}.",
+        "ceo_unknown": "CEO ಯಾರು ಎಂಬ ಖಚಿತ ಮಾಹಿತಿ ನನ್ನ ಬಳಿ ಇಲ್ಲ.",
+        "identity": "ನಾನು {name} ಸಂಸ್ಥೆಯ ಗ್ರಾಹಕ ಸಹಾಯಕ. ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸದ ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ಕರೆ ವಿನಂತಿಗಳ ಬಗ್ಗೆ ಸಹಾಯ ಮಾಡಬಹುದು.",
+        "services": "{services} ಸೇರಿದಂತೆ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸಗಳಲ್ಲಿ ಸಹಾಯ ಮಾಡುತ್ತೇವೆ.",
+        "unknown": "ಅದರ ಬಗ್ಗೆ ಖಚಿತ ಮಾಹಿತಿ ನನ್ನ ಬಳಿ ಇಲ್ಲ. ಪ್ರಶಾಂತ್ ಅವರಿಂದ ತಿಳಿದುಕೊಳ್ಳಬಹುದು.",
+    },
+    "kanglish": {
+        "owner": "{name} owner {owner} avaru.",
+        "founder": "{name} start madidavaru {founder} avaru.",
+        "ceo": "{name} CEO {ceo} avaru.",
+        "ceo_unknown": "CEO yaaru anta confirmed information nanna hatra illa.",
+        "identity": "Naanu {name} customer assistant. Fabrication kelasa bagge questions mattu callback enquiries ge help madabahudu.",
+        "services": "{services} seridanthe fabrication kelasa madutteve.",
+        "unknown": "Adara bagge confirmed information nanna hatra illa. Prashanth avaru clarify madabahudu.",
+    },
+}
+
+# Translate only service names that actually exist in the trusted business facts.
+SERVICE_LABELS = {
+    "Main gates (MS and SS)": ("gates", "ಗೇಟ್‌ಗಳು", "gates"),
+    "Window grills": ("window grills", "ಕಿಟಕಿ ಗ್ರಿಲ್‌ಗಳು", "window grills"),
+    "Staircase railings": ("staircase railings", "ಮೆಟ್ಟಿಲಿನ ರೇಲಿಂಗ್‌ಗಳು", "staircase railings"),
+    "Rolling shutters (manual and motorised)": ("rolling shutters", "ರೋಲಿಂಗ್ ಶಟರ್‌ಗಳು", "rolling shutters"),
+    "Repairs and welding": ("repairs and welding", "ರಿಪೇರಿ ಮತ್ತು ವೆಲ್ಡಿಂಗ್", "repair mattu welding"),
+}
+
+
+def business_info_intent(message: str) -> str | None:
+    """Recognise standalone FAQs; mixed questions/enquiries still reach the provider."""
+    answer = short_answer(message).replace("’", "'")
+    answer = re.sub(r"^(?:please |can you |could you )", "", answer)
+    return next(
+        (
+            intent
+            for intent, patterns in BUSINESS_INFO_PATTERNS.items()
+            if any(re.fullmatch(pattern, answer) for pattern in patterns)
+        ),
+        None,
+    )
+
+
+def business_info_reply(message: str, language: str, business: dict) -> str | None:
+    """Answer common FAQs without changing facts, consent or the pending enquiry step."""
+    intent = business_info_intent(message)
+    if intent is None:
+        return None
+    copy = BUSINESS_INFO_COPY.get(language, BUSINESS_INFO_COPY["en"])
+    name = business.get("name") or business.get("short_name")
+    if not name:
+        return copy["unknown"]
+    if intent == "ceo" and not business.get("ceo"):
+        owner = copy["owner"].format(owner=business["owner"], name=name) if business.get("owner") else ""
+        return " ".join(part for part in (owner, copy["ceo_unknown"]) if part)
+    if intent in ("owner", "founder", "ceo"):
+        if not business.get(intent):
+            return copy["unknown"]
+        return copy[intent].format(**{intent: business[intent], "name": name})
+    if intent == "identity":
+        return copy["identity"].format(name=name)
+    column = {"en": 0, "kn": 1, "kanglish": 2}.get(language, 0)
+    services = business.get("services", [])
+    labels = [words[column] for service, words in SERVICE_LABELS.items() if service in services]
+    if not labels:
+        labels = [str(service) for service in services[:5]]
+    return copy["services"].format(services=", ".join(labels)) if labels else copy["unknown"]
+
+
 GENERIC_SERVICES = {
     "fabrication",
     "fabrication assistance",
@@ -227,10 +344,14 @@ SHARED_AREA = re.compile(r"\b(?:j\.?\s*p\.?\s*nagar|jayanagar|vijayanagar)\b", r
 
 def business_question(message: str) -> bool:
     """Allow factual side questions without turning ordinary slot answers into model prose."""
-    question = re.search(r"\?|^(?:what|which|how|why|when|where|can|do|does|is|are)\b", message, re.I)
+    if business_info_intent(message):
+        return True
+    question = re.search(
+        r"\?|^(?:who|what|which|how|why|when|where|can|do|does|is|are|tell me)\b", message, re.I
+    )
     topic = re.search(
         r"\b(?:hours?|open\w*|close\w*|materials?|ms|ss|steel|rust|finish\w*|paint\w*|powder|"
-        r"gst|invoice\w*|tax|warrant\w*|certif\w*|services?|offer\w*|whatsapp|phone|"
+        r"gst|invoice\w*|tax|warrant\w*|certif\w*|services?|offer\w*|whatsapp|phone|ceo|owner|founder|company|"
         r"repair\w*|deliver\w*|install\w*|visit\w*|gate\w*|grill\w*|railing\w*|window\w*|skylight\w*)\b|ಮೆಟೀರಿಯಲ್|ಸಮಯ|ಬಣ್ಣ|ಜಿಎಸ್‌ಟಿ",
         message,
         re.I,
