@@ -107,7 +107,12 @@ def sse(event: dict) -> str:
 def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
     settings = settings or Settings()
     database = Database(settings.database_path)
-    signer = SessionSigner(settings.session_secret.get_secret_value(), settings.session_days)
+    signer = SessionSigner(
+        settings.session_secret.get_secret_value(),
+        settings.session_days,
+        settings.client_ip_header,
+        settings.trust_forwarded_for,
+    )
     locks: dict[str, asyncio.Lock] = {}
     semaphore = asyncio.Semaphore(settings.max_concurrent_chats)
     business = json.loads(settings.business_file.read_text())
@@ -182,12 +187,18 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
         return sid
 
     async def admin(request: Request):
-        await limit(request, "admin", 20)
         expected = settings.admin_token.get_secret_value()
         if not expected:
             raise HTTPException(503, "Administration is not configured")
-        if not secrets.compare_digest(bearer(request).encode(), expected.encode()):
+        try:
+            token = bearer(request)
+        except HTTPException:
+            token = ""
+        if not token or not secrets.compare_digest(token.encode(), expected.encode()):
+            # Only failures consume this bucket, so anonymous traffic cannot lock out a valid token.
+            await limit(request, "admin-fail", 10)
             raise HTTPException(401, "Invalid admin credentials")
+        await limit(request, "admin", 120)
 
     @application.get("/healthz")
     async def health():
@@ -385,10 +396,18 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
         async with lock:
             try:
                 memory = await asyncio.to_thread(database.load_session, sid)
+                if not memory.form_shows:
+                    # The callback form is only offered by plan_turn after consent; direct posts are refused.
+                    raise HTTPException(409, "Please continue the chat until the callback form is offered")
                 if outside_service_area(memory, business):
                     raise HTTPException(422, "That location is outside our service area")
                 await asyncio.to_thread(
-                    database.consume_limits, [(f"leads:session:{sid}", 86400, 5), ("leads:global", 86400, 30)]
+                    database.consume_limits,
+                    [
+                        (f"leads:session:{sid}", 86400, 3),
+                        (f"leads:ip:{signer.ip_key(request)}", 86400, 5),
+                        ("leads:global", 86400, settings.max_daily_leads),
+                    ],
                 )
                 consent_text = "I agree that SMEW may save my number and contact me about this enquiry."
                 saved, duplicate = await asyncio.to_thread(

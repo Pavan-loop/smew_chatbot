@@ -158,29 +158,48 @@ def design_suggestion(memory: SessionMemory) -> str:
     return text(memory.state.language, "suggestion")
 
 
+# Leadership roles a customer may ask about; without a listed CEO the owner is the answer.
+HEAD_ROLE = (
+    r"(?:ceo|boss|head|proprietor|propreitor|managing director|md|chairman|director|in[- ]?charge|"
+    r"person in charge|malika|maalika)"
+)
+COMPANY = r"(?:smew|you|your company|the company|this company|your shop|the shop|your business)"
+# Who/what the customer is asking about when they ask what the business does.
+SUBJECT = r"(?:you|your (?:company|team|firm|shop|business|workshop)|smew|the company)"
+SERVICE_VERB = (
+    r"(?:do|make|build|offer|provide|fabricate|sell|work on|deal (?:in|with)|take up|handle|"
+    r"speciali[sz]e in)"
+)
+
 BUSINESS_INFO_PATTERNS = {
     "ceo": [
-        r"who(?: is|'s) (?:the |your |smew's )?ceo(?: of (?:smew|your company|the company))?",
-        r"(?:what is |what's )?(?:your |the )?ceo(?:'s)? name",
-        r"(?:nimma )?ceo (?:yaaru|ಯಾರು)",
+        rf"who(?: is|'s) (?:the |your |smew's )?{HEAD_ROLE}(?: here)?(?: of {COMPANY})?",
+        rf"(?:what is |what's )?(?:your |the )?{HEAD_ROLE}(?:'s)? name",
+        rf"(?:nimma )?{HEAD_ROLE} (?:yaaru|ಯಾರು)",
+        rf"who runs {COMPANY}|who is in charge(?: here)?",
     ],
     "owner": [
-        r"who(?: is|'s) (?:the |your )?owner(?: of (?:smew|your company|the company))?",
-        r"who owns (?:smew|this company|your company|the company)",
+        rf"who(?: is|'s) (?:the |your )?owner(?: of {COMPANY})?",
+        r"who owns (?:smew|this company|your company|the company|you)",
         r"(?:nimma )?owner (?:yaaru|ಯಾರು)",
         r"(?:ಕಂಪನಿಯ )?ಮಾಲೀಕರು ಯಾರು",
     ],
     "founder": [
-        r"who(?: is|'s) (?:the |your )?founder(?: of (?:smew|your company|the company))?",
-        r"who founded (?:smew|your company|the company)",
+        rf"who(?: is|'s) (?:the |your )?founder(?: of {COMPANY})?",
+        r"who (?:founded|started) (?:smew|your company|the company|you)",
         r"(?:nimma )?founder (?:yaaru|ಯಾರು)",
         r"(?:ಕಂಪನಿಯ )?ಸ್ಥಾಪಕರು ಯಾರು",
     ],
     "services": [
-        r"what do you do",
-        r"(?:what|which) (?:services|work) (?:do|can) you (?:offer|provide|do)",
+        rf"what (?:all )?(?:do|does|can) {SUBJECT} {SERVICE_VERB}"
+        r"(?: exactly| here| there| actually| again| for customers)?",
+        rf"what (?:kinds?|types?|sorts?) of (?:work|services?|things|stuff|jobs|products|fabrication(?: work)?) "
+        rf"(?:do|does|can) {SUBJECT} {SERVICE_VERB}",
+        rf"(?:what|which) (?:services|work|products) (?:do|does|can) {SUBJECT} (?:offer|provide|do|make)",
         r"(?:what|which) services (?:are )?(?:available|offered)",
-        r"tell me (?:about your services|what you do)",
+        r"what(?: is|'s) (?:your|smew's) (?:business|work|line of work|speciali[sz]ation|speciality|specialty)",
+        r"what (?:are|r) (?:your|smew's) services",
+        rf"tell me (?:about your services|what {SUBJECT} (?:do|does))",
         r"nimma (?:services|kelasa) (?:enu|yenu)",
         r"neevu (?:enu|yenu) madtira",
         r"ನೀವು (?:ಏನು|ಯಾವ ಕೆಲಸ) ಮಾಡುತ್ತೀರಿ",
@@ -194,13 +213,30 @@ BUSINESS_INFO_PATTERNS = {
         r"ನೀವು ಯಾರು",
     ],
 }
+# Conversational lead-ins ("okay", "so", "hmm", "and") that do not change the question.
+FILLER = re.compile(
+    r"^(?:(?:ok(?:ay)?|okie|k|so|hmm+|hm+|and|well|also|then|alright|all right|right|cool|great|nice|"
+    r"oh|ah|uh|um+|hey|hi|hello|please|pls|plz|can you|could you|can u)\b[\s,.!-]*)+"
+)
+TRAILING_FILLER = re.compile(r"(?:[\s,]+(?:please|pls|bro|sir|madam|then))+$")
+# "you guys", "u", "ur" etc. all address the business.
+ADDRESSEE = re.compile(r"\b(?:you guys|u guys|you people|you all|y'?all|ya'll|u)\b")
+
+
+def business_text(message: str) -> str:
+    """Normalise a customer question for FAQ matching (case, filler words, ways of saying 'you')."""
+    answer = short_answer(message).replace("’", "'")
+    answer = FILLER.sub("", answer)
+    answer = TRAILING_FILLER.sub("", answer).rstrip(" .!,?")
+    answer = ADDRESSEE.sub("you", answer)
+    return re.sub(r"\bur\b", "your", answer)
+
 
 BUSINESS_INFO_COPY = {
     "en": {
         "owner": "{owner} is the owner of {name}.",
         "founder": "{founder} founded {name}.",
         "ceo": "{ceo} is the CEO of {name}.",
-        "ceo_unknown": "I don't have a confirmed CEO name to share.",
         "identity": "I'm the customer assistant for {name}. I can help with questions about our fabrication work and callback enquiries.",
         "services": "We help with fabrication work, including {services}.",
         "unknown": "I don't have confirmed information about that. Prashanth can help clarify it.",
@@ -209,7 +245,6 @@ BUSINESS_INFO_COPY = {
         "owner": "{name} ಸಂಸ್ಥೆಯ ಮಾಲೀಕರು {owner}.",
         "founder": "{name} ಸಂಸ್ಥೆಯನ್ನು {founder} ಸ್ಥಾಪಿಸಿದರು.",
         "ceo": "{name} ಸಂಸ್ಥೆಯ CEO {ceo}.",
-        "ceo_unknown": "CEO ಯಾರು ಎಂಬ ಖಚಿತ ಮಾಹಿತಿ ನನ್ನ ಬಳಿ ಇಲ್ಲ.",
         "identity": "ನಾನು {name} ಸಂಸ್ಥೆಯ ಗ್ರಾಹಕ ಸಹಾಯಕ. ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸದ ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ಕರೆ ವಿನಂತಿಗಳ ಬಗ್ಗೆ ಸಹಾಯ ಮಾಡಬಹುದು.",
         "services": "{services} ಸೇರಿದಂತೆ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸಗಳಲ್ಲಿ ಸಹಾಯ ಮಾಡುತ್ತೇವೆ.",
         "unknown": "ಅದರ ಬಗ್ಗೆ ಖಚಿತ ಮಾಹಿತಿ ನನ್ನ ಬಳಿ ಇಲ್ಲ. ಪ್ರಶಾಂತ್ ಅವರಿಂದ ತಿಳಿದುಕೊಳ್ಳಬಹುದು.",
@@ -218,7 +253,6 @@ BUSINESS_INFO_COPY = {
         "owner": "{name} owner {owner} avaru.",
         "founder": "{name} start madidavaru {founder} avaru.",
         "ceo": "{name} CEO {ceo} avaru.",
-        "ceo_unknown": "CEO yaaru anta confirmed information nanna hatra illa.",
         "identity": "Naanu {name} customer assistant. Fabrication kelasa bagge questions mattu callback enquiries ge help madabahudu.",
         "services": "{services} seridanthe fabrication kelasa madutteve.",
         "unknown": "Adara bagge confirmed information nanna hatra illa. Prashanth avaru clarify madabahudu.",
@@ -237,8 +271,7 @@ SERVICE_LABELS = {
 
 def business_info_intent(message: str) -> str | None:
     """Recognise standalone FAQs; mixed questions/enquiries still reach the provider."""
-    answer = short_answer(message).replace("’", "'")
-    answer = re.sub(r"^(?:please |can you |could you )", "", answer)
+    answer = business_text(message)
     return next(
         (
             intent
@@ -259,8 +292,8 @@ def business_info_reply(message: str, language: str, business: dict) -> str | No
     if not name:
         return copy["unknown"]
     if intent == "ceo" and not business.get("ceo"):
-        owner = copy["owner"].format(owner=business["owner"], name=name) if business.get("owner") else ""
-        return " ".join(part for part in (owner, copy["ceo_unknown"]) if part)
+        # A family workshop has no CEO: the owner is the answer to CEO/boss/head questions.
+        intent = "owner"
     if intent in ("owner", "founder", "ceo"):
         if not business.get(intent):
             return copy["unknown"]
@@ -340,23 +373,66 @@ PRODUCT_WORDS = re.compile(
 )
 MYSURU = re.compile(r"\b(?:mysuru|mysore|mysurinali|mysuralli)\b|ಮೈಸೂರು|ಮೈಸೂರಿನಲ್ಲಿ", re.I)
 SHARED_AREA = re.compile(r"\b(?:j\.?\s*p\.?\s*nagar|jayanagar|vijayanagar)\b", re.I)
+OPT_IN = re.compile(
+    r"\b(?:call\s+me|contact\s+me|call\s*back|ring\s+me|please\s+call|you\s+can\s+call|"
+    r"take\s+my\s+number|share\s+my\s+number|call\s+madi|contact\s+madi)\b|ಕರೆ\s*ಮಾಡಿ",
+    re.I,
+)
+OPT_OUT = re.compile(
+    r"\b(?:don'?t|do\s+not|never|no\s+need\s+to)\b.{0,20}\b(?:call|contact)|\b(?:call|contact)\w*\s+beda\b|ಬೇಡ",
+    re.I,
+)
+
+
+INFO_WORDS = (
+    r"(?:services?|materials?|contact(?:\s+(?:details|info|number))?|hours|timings?|address|location|"
+    r"phone(?:\s+number)?|whatsapp)"
+)
+# Bare topic requests such as the widget's chips ("Our services", "Contact and hours").
+BARE_INFO = re.compile(
+    rf"(?:(?:your|our|the|namma|nimma|yaava|which)\s+)?{INFO_WORDS}(?:\s+(?:used|offered|available|details))?"
+    rf"(?:\s+(?:and|&|mattu)\s+{INFO_WORDS})?",
+    re.I,
+)
+KN_INFO_CHIPS = {"ನಮ್ಮ ಸೇವೆಗಳು", "ಬಳಸುವ ಮೆಟೀರಿಯಲ್", "ಸಂಪರ್ಕ ಮತ್ತು ಸಮಯ"}
+QUESTION = re.compile(
+    r"\?|^(?:who|what|which|how|why|when|where|can|could|do|does|is|are|will|tell me|yaava|yelli|yavaga|hege|enu)\b"
+    r"|ಎಲ್ಲಿ|ಯಾವ|ಏನು|ಹೇಗೆ|ಯಾವಾಗ",
+    re.I,
+)
+INFO_TOPIC = re.compile(
+    r"\b(?:hours?|open\w*|close\w*|timings?|sunday|weekends?|address|locat\w*|shop|workshop|showroom|"
+    r"contact\w*|number|materials?|ms|ss|steel|rust|finish\w*|paint\w*|powder|"
+    r"gst|invoice\w*|tax|warrant\w*|certif\w*|services?|offer\w*|whatsapp|phone|experience|"
+    r"ceo|owner|founder|company|"
+    r"repair\w*|deliver\w*|install\w*|visit\w*|gate\w*|grill\w*|railing\w*|window\w*|skylight\w*)\b"
+    r"|ಮೆಟೀರಿಯಲ್|ಸಮಯ|ಬಣ್ಣ|ಜಿಎಸ್‌ಟಿ|ಸೇವೆ|ವಿಳಾಸ|ಸಂಪರ್ಕ|ಅಂಗಡಿ",
+    re.I,
+)
+
+# "So what kind of stuff do you guys make?": asking what the business itself does.
+ABOUT_BUSINESS = re.compile(
+    rf"\b(?:what|which|kinds?|types?|sorts?)\b.{{0,40}}\b{SUBJECT}\b.{{0,25}}\b"
+    rf"(?:{SERVICE_VERB}|does|speciali[sz]\w*)\b"
+)
 
 
 def business_question(message: str) -> bool:
     """Allow factual side questions without turning ordinary slot answers into model prose."""
     if business_info_intent(message):
         return True
-    question = re.search(
-        r"\?|^(?:who|what|which|how|why|when|where|can|do|does|is|are|tell me)\b", message, re.I
+    answer = short_answer(message)
+    if answer in KN_INFO_CHIPS or BARE_INFO.fullmatch(answer):
+        return True
+    normalized = business_text(message)
+    if not (QUESTION.search(message) or QUESTION.search(normalized)):
+        return False
+    # "Where ...?" asked of the assistant is about the workshop's location.
+    return bool(
+        re.match(r"\s*(?:where|yelli)\b", normalized)
+        or INFO_TOPIC.search(message)
+        or ABOUT_BUSINESS.search(normalized)
     )
-    topic = re.search(
-        r"\b(?:hours?|open\w*|close\w*|materials?|ms|ss|steel|rust|finish\w*|paint\w*|powder|"
-        r"gst|invoice\w*|tax|warrant\w*|certif\w*|services?|offer\w*|whatsapp|phone|ceo|owner|founder|company|"
-        r"repair\w*|deliver\w*|install\w*|visit\w*|gate\w*|grill\w*|railing\w*|window\w*|skylight\w*)\b|ಮೆಟೀರಿಯಲ್|ಸಮಯ|ಬಣ್ಣ|ಜಿಎಸ್‌ಟಿ",
-        message,
-        re.I,
-    )
-    return bool(question and topic)
 
 
 def normalize_turn(memory: SessionMemory, patch: Extraction, message: str, business: dict) -> Extraction:
@@ -429,6 +505,14 @@ def normalize_turn(memory: SessionMemory, patch: Extraction, message: str, busin
     if memory.awaiting == "location" and answer in UNKNOWN_ANSWERS:
         updates.update(location="Not provided", area_status="uncertain")
         memory.asked["location_city"] = 2
+    if memory.awaiting != "consent":
+        # Outside the consent question, only an explicit opt-back-in after a refusal changes consent.
+        opted_in = (
+            memory.state.contact_consent is False
+            and (patch.shares_phone or OPT_IN.search(message))
+            and not OPT_OUT.search(message)
+        )
+        updates["contact_consent"] = True if opted_in else None
     return normalize_consent_reply(memory, patch.model_copy(update=updates), message)
 
 
@@ -552,6 +636,9 @@ def merge(memory: SessionMemory, patch: Extraction, requested_language: str):
     # Consent can only be interpreted in response to the server's actual question.
     if memory.awaiting == "consent" and patch.contact_consent is not None:
         memory.state.contact_consent = patch.contact_consent
+    elif memory.state.contact_consent is False and patch.contact_consent is True:
+        # An explicit opt-back-in (see normalize_turn) resumes the callback flow after a refusal.
+        memory.state.contact_consent = True
     memory.state.language = (
         "kn" if patch.language == "kn" else "kanglish" if patch.language == "kanglish" else requested_language
     )
@@ -573,8 +660,12 @@ def plan_turn(memory: SessionMemory, patch: Extraction, business: dict) -> Plan:
     if memory.lead_saved:
         return Plan("help")
     if state.contact_consent is False:
+        declined_now = memory.awaiting == "consent"
         memory.awaiting = None
-        return Plan("declined")
+        if declined_now:
+            return Plan("declined")
+        # After a refusal, keep answering normally; an opt-back-in clears it in merge().
+        return Plan("ack") if patch.is_ack else Plan("help")
     if patch.is_ack and memory.awaiting is None:
         return Plan("ack")
     for slot, attr, cap in (

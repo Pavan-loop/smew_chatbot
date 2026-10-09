@@ -13,6 +13,7 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=int(os.environ.get("PORT", "8000")),
         workers=1,
+        # Client IPs come from the proxy-set X-Real-IP header; see app.security.client_ip.
         proxy_headers=False,
         access_log=False,
     )

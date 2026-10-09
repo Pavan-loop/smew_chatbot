@@ -20,12 +20,17 @@ class Settings(BaseSettings):
     session_secret: SecretStr = SecretStr("")
     admin_token: SecretStr = SecretStr("")
     allowed_origins: list[str] = ["http://localhost:3000"]
+    # Railway's public edge overwrites X-Real-IP with the visitor's IP. Set CLIENT_IP_HEADER="" if the API
+    # is reachable without such a proxy; TRUST_FORWARDED_FOR uses the first X-Forwarded-For hop as fallback.
+    client_ip_header: str = "x-real-ip"
+    trust_forwarded_for: bool = False
     telegram_bot_token: SecretStr = SecretStr("")
     telegram_chat_id: str = ""
     worker_enabled: bool = True
     worker_interval_seconds: float = Field(default=3, ge=0.1)
     max_notification_attempts: int = Field(default=8, ge=1, le=20)
     max_daily_chat_requests: int = Field(default=100, ge=1)
+    max_daily_leads: int = Field(default=30, ge=1)
     max_concurrent_chats: int = Field(default=2, ge=1, le=8)
     session_days: int = Field(default=7, ge=1, le=30)
     conversation_retention_days: int = Field(default=30, ge=1, le=30)

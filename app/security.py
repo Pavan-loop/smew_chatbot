@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import hmac
+import ipaddress
 import json
 import secrets
 import time
@@ -8,10 +9,28 @@ import time
 from fastapi import HTTPException, Request
 
 
+def client_ip(request: Request, header: str = "", trust_forwarded_for: bool = False) -> str:
+    """Visitor IP for rate limits.
+
+    Uvicorn proxy parsing is disabled, so the socket peer is Railway's edge proxy. The edge overwrites
+    X-Real-IP on every public request; X-Forwarded-For is used only when explicitly trusted.
+    """
+    candidates = [request.headers.get(header, "")] if header else []
+    if trust_forwarded_for:
+        candidates.append(request.headers.get("x-forwarded-for", "").split(",")[0])
+    for value in candidates:
+        try:
+            return str(ipaddress.ip_address(value.strip()))
+        except ValueError:
+            continue
+    return request.client.host if request.client else "unknown"
+
+
 class SessionSigner:
-    def __init__(self, secret: str, days: int):
+    def __init__(self, secret: str, days: int, ip_header: str = "", trust_forwarded_for: bool = False):
         self.secret = (secret or secrets.token_urlsafe(48)).encode()
         self.days = days
+        self.ip_header, self.trust_forwarded_for = ip_header, trust_forwarded_for
 
     def issue(self, sid: str) -> str:
         payload = json.dumps(
@@ -41,8 +60,7 @@ class SessionSigner:
             raise HTTPException(401, "Session expired. Start a new conversation.") from None
 
     def ip_key(self, request: Request) -> str:
-        # Do not trust caller-supplied X-Forwarded-For. Uvicorn proxy parsing is disabled.
-        ip = request.client.host if request.client else "unknown"
+        ip = client_ip(request, self.ip_header, self.trust_forwarded_for)
         return hmac.new(self.secret, ip.encode(), hashlib.sha256).hexdigest()[:24]
 
 
