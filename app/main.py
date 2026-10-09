@@ -28,7 +28,9 @@ from app.brain import (
     normalize_turn,
     outside_service_area,
     plan_turn,
+    polish_answer,
     reviewed_reply,
+    social_prefix,
     text,
     validated_reply,
 )
@@ -37,7 +39,7 @@ from app.database import Database, RateExceeded
 from app.models import ChatRequest, LeadRequest, LeadUpdate
 from app.notifications import NotificationWorker
 from app.providers import OpenAIProvider, ProviderError
-from app.security import SessionSigner, bearer
+from app.security import SessionSigner, bearer, redact_phones
 
 log = logging.getLogger("smew")
 
@@ -116,6 +118,10 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
     locks: dict[str, asyncio.Lock] = {}
     semaphore = asyncio.Semaphore(settings.max_concurrent_chats)
     business = json.loads(settings.business_file.read_text())
+    # The workshop's own numbers are not customer data and stay readable in chat.
+    workshop_numbers = tuple(
+        str(business.get(key, ""))[-10:] for key in ("phone", "whatsapp") if business.get(key)
+    )
 
     @asynccontextmanager
     async def lifespan(application):
@@ -130,7 +136,8 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
         try:
             await asyncio.to_thread(database.initialize)
             settings.database_path.chmod(0o600)
-            async with httpx.AsyncClient(trust_env=False, limits=httpx.Limits(max_connections=8)) as client:
+            connections = httpx.Limits(max_connections=settings.max_concurrent_chats + 4)
+            async with httpx.AsyncClient(trust_env=False, limits=connections) as client:
                 application.state.provider = provider or OpenAIProvider(settings, client)
                 worker = NotificationWorker(settings, database, client)
                 application.state.worker = worker
@@ -232,15 +239,17 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 m["action"] = None
         return {"messages": history, "lead_captured": memory.lead_saved, "language": memory.state.language}
 
-    async def build_events(sid: str, body: ChatRequest):
+    async def build_events(sid: str, body: ChatRequest, phone_shared: bool = False):
+        # body.message is already phone-redacted; phone_shared records that a number was typed.
         memory = await asyncio.to_thread(database.load_session, sid)
         original = memory.model_copy(deep=True)
         history = await asyncio.to_thread(database.history, sid)
+        last = next((m["content"] for m in reversed(history) if m["role"] == "assistant"), "")
         try:
             async with asyncio.timeout(50):
                 memory.turn += 1
                 language = "kn" if re.search(r"[\u0c80-\u0cff]", body.message) else body.language
-                reply = conversational_reply(memory, body.message, language)
+                reply = conversational_reply(memory, body.message, language, last)
                 if reply is None:
                     reply = business_info_reply(body.message, language, business)
                 show_form = False
@@ -252,6 +261,9 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                         history, body.message, memory, business
                     )
                     await asyncio.to_thread(database.record_usage, settings.extractor_model, usage)
+                    if phone_shared:
+                        # The model only sees a masked number; the server knows one was shared.
+                        patch = patch.model_copy(update={"shares_phone": True})
                     patch = normalize_turn(memory, patch, body.message, business)
                     merge(memory, patch, body.language)
                     plan = plan_turn(memory, patch, business)
@@ -264,30 +276,40 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                         or (plan.mode in REVIEWED_MODES and not needs_answer)
                     )
                     if use_reviewed:
-                        reply = reviewed_reply(memory, patch, plan, body.message, previous_awaiting)
+                        reply = reviewed_reply(
+                            memory, patch, plan, body.message, previous_awaiting, last, business, needs_answer
+                        )
                     else:
                         reply, usage = await application.state.provider.reply(
                             history, body.message, memory, "", business
                         )
                         await asyncio.to_thread(database.record_usage, settings.chat_model, usage)
-                        reply, valid = validated_reply(reply, memory, plan)
+                        reply, valid = validated_reply(reply, memory, plan, business)
                         if not valid:
                             await asyncio.to_thread(database.error, "reply_guardrail")
                         else:
                             # The model answers facts; the server owns the next enquiry question.
-                            answer = " ".join(
-                                sentence
-                                for sentence in re.split(r"(?<=[.!?])\s+", reply)
-                                if not sentence.rstrip().endswith("?")
+                            answer = polish_answer(
+                                " ".join(
+                                    sentence
+                                    for sentence in re.split(r"(?<=[.!?])\s+", reply)
+                                    if not sentence.rstrip().endswith("?")
+                                )
                             )
                             followup = (
-                                reviewed_reply(memory, patch, plan, body.message, previous_awaiting)
+                                reviewed_reply(
+                                    memory, patch, plan, body.message, previous_awaiting, last, business, True
+                                )
                                 if plan.mode in REVIEWED_MODES
                                 else ""
                             )
                             reply = " ".join(part for part in (answer, followup) if part) or text(
                                 memory.state.language, "help"
                             )
+                    reply = social_prefix(body.message, memory.state.language) + reply
+                if reply.strip() == last.strip():
+                    # Never send the exact same message twice in a row.
+                    reply = text(memory.state.language, "recap") + reply
                 events = [{"type": "text", "text": reply, "language": memory.state.language}]
                 if show_form:
                     events.append(
@@ -317,6 +339,9 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
     @application.post("/api/chat")
     async def chat(body: ChatRequest, request: Request, sid: str = Depends(session_id)):
         await limit(request, "chat", 20)
+        # Customer phone numbers typed into chat are masked before storage and before any LLM call.
+        redacted, phone_shared = redact_phones(body.message, workshop_numbers)
+        body = body.model_copy(update={"message": redacted})
         lock = locks.setdefault(sid, asyncio.Lock())
         if lock.locked():
             raise HTTPException(409, "A request is already running in this conversation")
@@ -354,7 +379,7 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 if cached:
                     result = cached[1]
                 else:
-                    task = asyncio.create_task(build_events(sid, body))
+                    task = asyncio.create_task(build_events(sid, body, phone_shared))
                     while not task.done():
                         done, _ = await asyncio.wait({task}, timeout=8)
                         if not done:
@@ -368,7 +393,7 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                 raise
             except Exception:
                 await asyncio.to_thread(database.error, "chat_internal_error")
-                log.error("chat_internal_error")
+                log.exception("chat_internal_error")
                 yield sse({"type": "error", "text": text(body.language, "failure")})
                 yield sse({"type": "done"})
             finally:

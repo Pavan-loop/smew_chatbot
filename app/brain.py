@@ -10,19 +10,19 @@ COPY = {
         "greeting": "Hi! Welcome to SMEW. How can we help with your fabrication work?",
         "failure": "The assistant is temporarily unavailable. You can call or WhatsApp Prashanth at 9986464819.",
         "saved": "Thanks, your callback request is saved. Prashanth will review the details and confirm his availability.",
-        "price": "The price depends on size, material and design; the site visit is free, with a quote after the visit.",
+        "price": "Prices depend on the design, material (MS or SS) and size, so we don't quote a fixed rate in chat. Prashanth offers a free site visit and shares an exact quotation after it, and I can arrange a callback whenever you're ready.",
         "service": "What would you like made or repaired—gates, window grills, railings, or something else?",
         "size": "Do you happen to know the approximate size? It's fine if you haven't measured it yet.",
         "design": "Have you picked a design or reference photo, or is that still undecided?",
-        "location": "Which area is your place in?",
+        "location": "Which area is the work in?",
         "consent": "Would you like to share your contact number so Prashanth can discuss the work with you?",
         "time": "What's a convenient time for Prashanth to call you?",
         "form": "Whenever you're ready, share your number using the form below. Prashanth will confirm when he's available to call.",
         "declined": "No problem at all. You can call or WhatsApp Prashanth at 9986464819 whenever you're ready.",
-        "out_of_area": "SMEW serves Mysuru and nearby areas only. We cannot arrange work in that location.",
-        "uncertain_area": "Prashanth can confirm whether your area is covered. Please contact him at 9986464819.",
-        "ack": "You're welcome! Happy to help.",
-        "help": "For specific requirements, you can contact Prashanth at 9986464819.",
+        "out_of_area": "Sorry, SMEW only works in Mysuru and nearby areas, so we can't take up work in that location.",
+        "uncertain_area": "Prashanth can confirm whether we cover your area. You can reach him at 9986464819.",
+        "ack": "You're welcome, happy to help!",
+        "help": "Happy to help with anything else. For specific requirements, you can also reach Prashanth at 9986464819.",
         "closing": "You're welcome to message us again whenever you need help. Take care!",
         "pending_ack": "You're welcome! If you'd like a callback, share your number and consent in the form above whenever you're ready.",
         "memory": "I can use details from this chat, but I can't identify you across separate chats or devices.",
@@ -33,12 +33,21 @@ COPY = {
         "location_city": "Which city is the work in—Mysuru or another city?",
         "coverage_pending": "Prashanth can check whether we cover your area before we plan a visit.",
         "skylight_review": "Prashanth will need to review the skylight requirement before confirming whether we can take it up.",
+        "how_are_you": "I'm doing well, thank you for asking! I hope you're doing well too.",
+        "how_are_you_short": "I'm doing well, thanks for asking!",
+        "apology": "Sorry if I came across that way! I'm here to help, and you can always call or WhatsApp Prashanth at 9986464819 to talk to a person.",
+        "apology_short": "Sorry about that!",
+        "frustration": "Sorry about that, I may have missed what you meant. You can also call or WhatsApp Prashanth at 9986464819 anytime.",
+        "compliment": "That's very kind of you, thank you!",
+        "capabilities": "I can help with gates, grills, railings, shutters and repairs, or answer questions about pricing, location and timings.",
+        "price_ranges": "As a rough guide: {ranges}. The final price depends on the design, material and size, and Prashanth confirms it after a free site visit.",
+        "recap": "Just to recap: ",
     },
     "kn": {
         "greeting": "ನಮಸ್ಕಾರ! SMEW ಗೆ ಸ್ವಾಗತ. ನಿಮಗೆ ಯಾವ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸದ ಬಗ್ಗೆ ಸಹಾಯ ಬೇಕು?",
         "failure": "ಈಗ ಸಹಾಯಕ ಲಭ್ಯವಿಲ್ಲ. ಪ್ರಶಾಂತ್ ಅವರಿಗೆ 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ ಕರೆ ಅಥವಾ WhatsApp ಮಾಡಬಹುದು.",
         "saved": "ನಿಮ್ಮ ಕರೆ ವಿನಂತಿಯನ್ನು ಉಳಿಸಲಾಗಿದೆ. ಪ್ರಶಾಂತ್ ಅವರು ನಿಮ್ಮ ವಿಚಾರಣೆಯನ್ನು ಪರಿಶೀಲಿಸಿ ಕರೆ ಸಮಯವನ್ನು ಖಚಿತಪಡಿಸುತ್ತಾರೆ.",
-        "price": "ಬೆಲೆ ಗಾತ್ರ, ಮೆಟೀರಿಯಲ್ ಮತ್ತು ವಿನ್ಯಾಸವನ್ನು ಅವಲಂಬಿಸಿರುತ್ತದೆ. ಸ್ಥಳ ಪರಿಶೀಲನೆ ಉಚಿತ; ಅದರ ನಂತರ ಕೊಟೇಶನ್ ನೀಡಲಾಗುತ್ತದೆ.",
+        "price": "ಬೆಲೆ ವಿನ್ಯಾಸ, ಮೆಟೀರಿಯಲ್ (MS ಅಥವಾ SS) ಮತ್ತು ಗಾತ್ರವನ್ನು ಅವಲಂಬಿಸಿರುವುದರಿಂದ ಚಾಟ್‌ನಲ್ಲಿ ನಿಗದಿತ ದರ ಹೇಳುವುದಿಲ್ಲ. ಪ್ರಶಾಂತ್ ಅವರು ಉಚಿತವಾಗಿ ಸ್ಥಳ ಪರಿಶೀಲನೆ ಮಾಡಿ ನಂತರ ನಿಖರ ಕೊಟೇಶನ್ ನೀಡುತ್ತಾರೆ; ನೀವು ಸಿದ್ಧರಾದಾಗ ಕರೆ ವ್ಯವಸ್ಥೆ ಮಾಡಬಹುದು.",
         "service": "ನಿಮಗೆ ಯಾವ ಕೆಲಸ ಅಥವಾ ರಿಪೇರಿ ಬೇಕು—ಗೇಟ್, ಕಿಟಕಿ ಗ್ರಿಲ್, ರೇಲಿಂಗ್ ಅಥವಾ ಬೇರೆ ಕೆಲಸವೇ?",
         "size": "ಅಂದಾಜು ಗಾತ್ರ ಗೊತ್ತಿದೆಯೇ? ಇನ್ನೂ ಅಳತೆ ಮಾಡಿಲ್ಲದಿದ್ದರೂ ಪರವಾಗಿಲ್ಲ.",
         "design": "ವಿನ್ಯಾಸ ಅಥವಾ ಮಾದರಿ ಫೋಟೋ ಆಯ್ಕೆ ಮಾಡಿದ್ದೀರಾ, ಅಥವಾ ಇನ್ನೂ ನಿರ್ಧರಿಸಿಲ್ಲವೇ?",
@@ -49,7 +58,7 @@ COPY = {
         "declined": "ಪರವಾಗಿಲ್ಲ. ನಿಮಗೆ ಅನುಕೂಲವಾದಾಗ ಪ್ರಶಾಂತ್ ಅವರಿಗೆ 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ WhatsApp ಮಾಡಬಹುದು.",
         "out_of_area": "SMEW ಮೈಸೂರು ಮತ್ತು ಹತ್ತಿರದ ಪ್ರದೇಶಗಳಲ್ಲಿ ಮಾತ್ರ ಸೇವೆ ನೀಡುತ್ತದೆ. ಆ ಸ್ಥಳದಲ್ಲಿ ಕೆಲಸ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.",
         "uncertain_area": "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಸೇವೆ ಲಭ್ಯವಿದೆಯೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸಬಹುದು. 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ.",
-        "ack": "ಧನ್ಯವಾದಗಳು!",
+        "ack": "ಸಹಾಯ ಮಾಡಲು ಸಂತೋಷ!",
         "help": "ನಿಮ್ಮ ಕೆಲಸದ ವಿವರಗಳಿಗಾಗಿ ಪ್ರಶಾಂತ್ ಅವರನ್ನು 9986464819 ಸಂಖ್ಯೆಯಲ್ಲಿ ಸಂಪರ್ಕಿಸಬಹುದು.",
         "closing": "SMEW ಅನ್ನು ಸಂಪರ್ಕಿಸಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು. ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಸಹಾಯ ಬೇಕಾದಾಗ ಮತ್ತೆ ಇಲ್ಲಿ ಕೇಳಬಹುದು.",
         "pending_ack": "ಧನ್ಯವಾದಗಳು! ಕರೆ ವಿನಂತಿಗಾಗಿ ಮೇಲಿನ ಫಾರ್ಮ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಸಂಖ್ಯೆ ಮತ್ತು ಸಂಪರ್ಕಿಸಲು ಒಪ್ಪಿಗೆ ನೀಡಿ.",
@@ -61,12 +70,21 @@ COPY = {
         "location_city": "ಕೆಲಸ ಯಾವ ನಗರದಲ್ಲಿದೆ—ಮೈಸೂರು ಅಥವಾ ಬೇರೆ ನಗರವೇ?",
         "coverage_pending": "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಸೇವೆ ನೀಡಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸಬೇಕು.",
         "skylight_review": "ಸ್ಕೈಲೈಟ್ ಕೆಲಸವನ್ನು ಕೈಗೊಳ್ಳಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ ಖಚಿತಪಡಿಸಬೇಕು.",
+        "how_are_you": "ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ, ಕೇಳಿದ್ದಕ್ಕೆ ಧನ್ಯವಾದಗಳು! ನೀವೂ ಚೆನ್ನಾಗಿದ್ದೀರಿ ಎಂದು ಭಾವಿಸುತ್ತೇನೆ.",
+        "how_are_you_short": "ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ, ಧನ್ಯವಾದಗಳು!",
+        "apology": "ಕ್ಷಮಿಸಿ, ನನ್ನ ಉತ್ತರ ಹಾಗೆ ಅನ್ನಿಸಿದ್ದರೆ! ನಾನು ಸಹಾಯ ಮಾಡಲು ಇಲ್ಲಿದ್ದೇನೆ. ನೇರವಾಗಿ ಮಾತನಾಡಲು ಪ್ರಶಾಂತ್ ಅವರಿಗೆ 9986464819 ಗೆ ಕರೆ ಅಥವಾ WhatsApp ಮಾಡಬಹುದು.",
+        "apology_short": "ಕ್ಷಮಿಸಿ!",
+        "frustration": "ಕ್ಷಮಿಸಿ, ನಿಮ್ಮ ಮಾತು ನನಗೆ ಸರಿಯಾಗಿ ಅರ್ಥವಾಗದೇ ಇರಬಹುದು. ಯಾವಾಗ ಬೇಕಾದರೂ ಪ್ರಶಾಂತ್ ಅವರಿಗೆ 9986464819 ಗೆ ಕರೆ ಅಥವಾ WhatsApp ಮಾಡಬಹುದು.",
+        "compliment": "ನಿಮ್ಮ ಮೆಚ್ಚುಗೆಗೆ ಧನ್ಯವಾದಗಳು!",
+        "capabilities": "ಗೇಟ್, ಕಿಟಕಿ ಗ್ರಿಲ್, ರೇಲಿಂಗ್, ರೋಲಿಂಗ್ ಶಟರ್ ಮತ್ತು ರಿಪೇರಿ ಅಥವಾ ವೆಲ್ಡಿಂಗ್ ಕೆಲಸದಲ್ಲಿ ಸಹಾಯ ಮಾಡಬಹುದು; ಬೆಲೆ, ವಿಳಾಸ ಅಥವಾ ಸಮಯದ ಪ್ರಶ್ನೆಗಳಿಗೂ ಉತ್ತರಿಸಬಹುದು.",
+        "price_ranges": "ಅಂದಾಜು ಮಾರ್ಗದರ್ಶನಕ್ಕಾಗಿ: {ranges}. ಅಂತಿಮ ಬೆಲೆ ವಿನ್ಯಾಸ, ಮೆಟೀರಿಯಲ್ ಮತ್ತು ಗಾತ್ರವನ್ನು ಅವಲಂಬಿಸಿರುತ್ತದೆ; ಉಚಿತ ಸ್ಥಳ ಪರಿಶೀಲನೆಯ ನಂತರ ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸುತ್ತಾರೆ.",
+        "recap": "ಮತ್ತೊಮ್ಮೆ ಹೇಳುವುದಾದರೆ: ",
     },
     "kanglish": {
         "greeting": "Namaskara! SMEW ge swagatha. Nimma fabrication kelasa bagge heli, help madona.",
         "failure": "Iga assistant available illa. Prashanth avarige 9986464819 ge call athava WhatsApp madi.",
         "saved": "Nimma callback request save aagide. Prashanth avaru enquiry nodi call time confirm madtare.",
-        "price": "Price size, material mattu design mele depend aagutte. Site visit free; adara nantara quotation kodtare.",
+        "price": "Price design, material (MS athava SS) mattu size mele depend aagutte, adakke chat alli fixed rate heLalla. Prashanth avaru free site visit madi nantara exact quotation kodtare; ready aadaga callback arrange madabahudu.",
         "service": "Nimage yaava kelasa athava repair beku—gate, window grill, railing athava bere kelasa na?",
         "size": "Approximate size gothideya? Innu measure madillandre parvagilla.",
         "design": "Design athava reference photo choose madiddira, illa innu decide madilva?",
@@ -77,7 +95,7 @@ COPY = {
         "declined": "Parvagilla. Ready aadaga Prashanth avarige 9986464819 ge WhatsApp madi.",
         "out_of_area": "SMEW Mysuru mattu hattirada areas alli mathra service kodutte. Aa location alli kelasa madoke aagalla.",
         "uncertain_area": "Nimma area cover aagutta anta Prashanth avaru confirm madtare. 9986464819 ge contact madi.",
-        "ack": "Dhanyavadagalu!",
+        "ack": "Help madidakke khushi aaytu!",
         "help": "Nimma requirement bagge Prashanth avarige 9986464819 ge contact madi.",
         "closing": "SMEW contact madiddakke dhanyavadagalu. Fabrication help bekadaga matte illi keli.",
         "pending_ack": "Dhanyavadagalu! Callback bekandre melina form alli nimma number mattu contact consent kodi.",
@@ -89,12 +107,80 @@ COPY = {
         "location_city": "Kelasa yaava city alli ide—Mysuru athava bere city na?",
         "coverage_pending": "Nimma area cover madabahuda anta Prashanth avaru confirm madabeku.",
         "skylight_review": "Skylight kelasa thagobahuda anta Prashanth avaru requirement nodi confirm madabeku.",
+        "how_are_you": "Naanu chennagiddini, kelidakke thanks! Neevu kooda chennagiddira anta andkotini.",
+        "how_are_you_short": "Naanu chennagiddini, thanks!",
+        "apology": "Sorry, nanna reply haage anisidre! Naanu help madoke idini. Direct aagi matadbekandre Prashanth avarige 9986464819 ge call athava WhatsApp madi.",
+        "apology_short": "Sorry!",
+        "frustration": "Sorry, neevu heLiddu nanage sariyagi artha aagirlikilla. Yavaga bekadru Prashanth avarige 9986464819 ge call athava WhatsApp madi.",
+        "compliment": "Thumba thanks, nimma maatige!",
+        "capabilities": "Gate, window grill, railing, rolling shutter mattu repair athava welding kelasakke help madabahudu; price, location athava timings bagge questions ge kooda answer madabahudu.",
+        "price_ranges": "Rough aagi: {ranges}. Final price design, material mattu size mele depend aagutte; free site visit nantara Prashanth avaru confirm madtare.",
+        "recap": "Matte heLbekandre: ",
     },
 }
 
 
 def text(language: str, key: str) -> str:
     return COPY.get(language, COPY["en"])[key]
+
+
+# Alternative phrasings so the bot never sends the same steering question twice in a row.
+VARIANTS = {
+    "en": {
+        "greeting": ["Hello again! What can I help you with today?"],
+        "invite": [
+            "What can I help you with today: a gate, window grills, railings or a repair?",
+            "Is there some fabrication work I can help you with?",
+            "What are you planning to get made or fixed?",
+        ],
+        "service": [
+            "Which work do you have in mind: a gate, grills, railings, shutters or a repair?",
+            "What can we make or fix for you?",
+        ],
+        "location": ["Where is the site, which area?", "Could you tell me which area the work is in?"],
+        "location_city": ["Just to check, which city is that in: Mysuru or somewhere else?"],
+        "consent": ["Shall Prashanth give you a call about this?"],
+        "help": ["Glad to help with anything else. You can also reach Prashanth directly at 9986464819."],
+        "ack": ["Glad I could help!"],
+    },
+    "kn": {
+        "greeting": ["ಮತ್ತೆ ನಮಸ್ಕಾರ! ಇಂದು ಯಾವ ಸಹಾಯ ಬೇಕು?"],
+        "invite": [
+            "ಇಂದು ಯಾವ ಕೆಲಸದಲ್ಲಿ ಸಹಾಯ ಬೇಕು—ಗೇಟ್, ಕಿಟಕಿ ಗ್ರಿಲ್, ರೇಲಿಂಗ್ ಅಥವಾ ರಿಪೇರಿ?",
+            "ಯಾವುದಾದರೂ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸದಲ್ಲಿ ಸಹಾಯ ಮಾಡಲೇ?",
+        ],
+        "service": ["ಯಾವ ಕೆಲಸ ಮಾಡಿಸಬೇಕು ಅಥವಾ ರಿಪೇರಿ ಮಾಡಬೇಕು ಎಂದು ತಿಳಿಸುತ್ತೀರಾ?"],
+        "location": ["ಕೆಲಸ ಯಾವ ಪ್ರದೇಶದಲ್ಲಿದೆ ಎಂದು ತಿಳಿಸುತ್ತೀರಾ?"],
+        "location_city": ["ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು, ಅದು ಯಾವ ನಗರದಲ್ಲಿದೆ—ಮೈಸೂರು ಅಥವಾ ಬೇರೆ ಊರೇ?"],
+        "consent": ["ಈ ಕೆಲಸದ ಬಗ್ಗೆ ಪ್ರಶಾಂತ್ ಅವರು ನಿಮಗೆ ಕರೆ ಮಾಡಲೇ?"],
+        "help": ["ಬೇರೆ ಏನಾದರೂ ಸಹಾಯ ಬೇಕಾದರೆ ಕೇಳಿ. ಪ್ರಶಾಂತ್ ಅವರನ್ನು 9986464819 ಗೆ ನೇರವಾಗಿ ಸಂಪರ್ಕಿಸಬಹುದು."],
+        "ack": ["ಸಂತೋಷ!"],
+    },
+    "kanglish": {
+        "greeting": ["Matte namaskara! Ivattu enu help beku?"],
+        "invite": [
+            "Ivattu yaava kelasakke help beku—gate, window grill, railing athava repair?",
+            "Yavudadru fabrication kelasakke help madla?",
+        ],
+        "service": ["Yaava kelasa madisbeku athava repair madbeku anta heLtira?"],
+        "location": ["Kelasa yaava area alli ide anta heLtira?"],
+        "location_city": ["Confirm madkoloke, adu yaava city—Mysuru na athava bere ooru na?"],
+        "consent": ["Ee kelasa bagge Prashanth avaru nimage call madla?"],
+        "help": [
+            "Bere enadru help beku andre keli. Prashanth avarige 9986464819 ge direct contact madabahudu."
+        ],
+        "ack": ["Khushi aaytu!"],
+    },
+}
+
+
+def say(language: str, key: str, last: str = "", seed: int = 0) -> str:
+    """Pick a phrasing for `key`, rotating by `seed` and never reusing one from the previous reply."""
+    options = [text(language, key)] if key in COPY["en"] else []
+    options += VARIANTS.get(language, VARIANTS["en"]).get(key, [])
+    start = seed % len(options)
+    rotated = options[start:] + options[:start]
+    return next((option for option in rotated if option not in last), rotated[0])
 
 
 @dataclass
@@ -107,7 +193,7 @@ def short_answer(message: str) -> str:
     return re.sub(r"\s+", " ", message.casefold().strip()).rstrip(" .!,?")
 
 
-def conversational_reply(memory: SessionMemory, message: str, language: str) -> str | None:
+def conversational_reply(memory: SessionMemory, message: str, language: str, last: str = "") -> str | None:
     """Handle exact social replies without advancing enquiry or contact permission."""
     answer = short_answer(message)
     if answer in {
@@ -122,8 +208,8 @@ def conversational_reply(memory: SessionMemory, message: str, language: str) -> 
         if details:
             return text(language, "remembered").format(details=", ".join(details))
         return text(language, "memory")
-    if answer in {"hi", "hey", "hello", "namaskara", "ನಮಸ್ಕಾರ"}:
-        return text(language, "greeting")
+    if GREETING_ONLY.fullmatch(answer):
+        return say(language, "greeting", last)
     if answer in {
         "nothing",
         "nothing else",
@@ -149,8 +235,114 @@ def conversational_reply(memory: SessionMemory, message: str, language: str) -> 
         "ಧನ್ಯವಾದಗಳು",
     }:
         key = "pending_ack" if memory.form_shows and not memory.lead_saved else "ack"
-        return text(language, key)
+        return say(language, key, last)
+    return social_reply(memory, message, language, last)
+
+
+GREETING = (
+    r"(?:hi+|hey+|hello+|helo|hai|hiya|namaskara|namaste|good (?:morning|afternoon|evening)|ನಮಸ್ಕಾರ)"
+    r"(?: there| bro| sir| madam| team| smew)?"
+)
+GREETING_ONLY = re.compile(GREETING)
+HOW_ARE_YOU = (
+    r"(?:how (?:are|r) (?:you|u)(?: doing)?(?: today)?|how(?:'s| is) it going|how do you do|hru|"
+    r"what'?s up|wassup|hope you(?:'re| are) (?:well|good|fine|doing well)|hegiddira|hegidira|hegidiya|"
+    r"chennagiddira|ಹೇಗಿದ್ದೀರಾ|ಹೇಗಿದ್ದೀರಿ|ಚೆನ್ನಾಗಿದ್ದೀರಾ)"
+)
+SOCIAL_TAIL = r"(?:[\s,!.]*(?:bro|sir|madam|buddy|friend|dear|ji))?"
+HOW_ARE_YOU_ONLY = re.compile(rf"(?:{GREETING}[\s,!.]*)?{HOW_ARE_YOU}{SOCIAL_TAIL}")
+HOW_ARE_YOU_START = re.compile(rf"^(?:{GREETING}[\s,!.]*)?{HOW_ARE_YOU}\b")
+ADDRESS_BOT = (
+    r"(?:you(?:'re| are| r)?|u(?: r)?|ur|youre|this (?:bot|chat|assistant|thing)|"
+    r"your (?:bot|reply|replies|answers?|service)|neevu|nivu|neenu)"
+)
+INSULT = (
+    r"(?:rude|rood|roode|ruud|rud|useless|usless|stupid|stupd|dumb|idiot\w*|bad|worst|annoying|irritating|"
+    r"hopeless|pathetic|rubbish|unhelpful|not (?:helpful|useful|good)|no use|waste|nonsense|horrible|"
+    r"terrible|bekar|bakwas)"
+)
+RUDE = re.compile(
+    rf"\b{ADDRESS_BOT}\s+(?:(?:is|are|was|so|very|really|such an?|being|kind of|a bit|too|a|an)\s+)*{INSULT}\b"
+    rf"|^(?:{INSULT}|shut up|stfu|waste of time)(?:\s+(?:bot|assistant))?$|\bshut up\b|ಅಸಭ್ಯ|ಪ್ರಯೋಜನವಿಲ್ಲ"
+)
+FRUSTRATED = re.compile(
+    r"not listening|\byou (?:don'?t|do not|didn'?t|did not) (?:understand|get it|listen|answer)|"
+    r"(?:not|never) answer(?:ing|ed)? (?:my|the) question|answer my question|\bi (?:already|just) (?:told|said|asked)|"
+    r"same (?:question|thing) again|stop asking|why (?:do|are) you (?:keep )?(?:asking|repeating)|"
+    r"you keep (?:asking|repeating)|this is (?:not working|frustrating|confusing)|\bfrustrat\w*|"
+    r"artha aagilla|ಅರ್ಥ ಆಗಿಲ್ಲ"
+)
+PRAISE = r"(?:great|helpful|awesome|nice|good|amazing|super|cool|brilliant|excellent|wonderful|perfect|sweet)"
+COMPLIMENT = re.compile(
+    rf"(?:(?:you(?:'re| are| r)|u r|ur|this is|that'?s|that is|its|it's)\s+(?:so |very |really )?{PRAISE}"
+    rf"(?:\s+(?:bot|job|work|website|service|assistant|help))?|{PRAISE} (?:bot|job|work|website|service|assistant)"
+    rf"|well done|love (?:it|this)|thumbs up)(?:[\s,!.]*(?:thanks?|thank you))?{SOCIAL_TAIL}"
+)
+
+
+def social_kind(message: str) -> str | None:
+    """Classify small talk: how-are-you, rudeness, frustration or a compliment."""
+    answer = short_answer(message).replace("’", "'")
+    if HOW_ARE_YOU_ONLY.fullmatch(answer):
+        return "how_are_you"
+    if RUDE.search(answer):
+        return "apology"
+    if FRUSTRATED.search(answer):
+        return "frustration"
+    if COMPLIMENT.fullmatch(answer):
+        return "compliment"
     return None
+
+
+def has_request(message: str) -> bool:
+    return bool(
+        PRODUCT_WORDS.search(message) or PRICE_INTENT.search(message) or business_info_intent(message)
+    )
+
+
+def social_reply(memory: SessionMemory, message: str, language: str, last: str = "") -> str | None:
+    """Answer pure small talk warmly, then steer gently without changing the enquiry state."""
+    kind = social_kind(message)
+    if kind is None or (kind != "how_are_you" and has_request(message)):
+        return None
+    if kind in ("apology", "frustration"):
+        # Someone unhappy gets an apology and what we can do, not another question.
+        return text(language, kind) + " " + text(language, "capabilities")
+    pending = memory.awaiting if memory.awaiting in VARIANTS["en"] else None
+    steer = say(language, pending or "invite", last, memory.turn)
+    return text(language, kind) + " " + steer
+
+
+def social_prefix(message: str, language: str) -> str:
+    """A short warm opener when small talk is mixed with a real request."""
+    answer = short_answer(message).replace("’", "'")
+    if HOW_ARE_YOU_START.search(answer):
+        return text(language, "how_are_you_short") + " "
+    if RUDE.search(answer) or FRUSTRATED.search(answer):
+        return text(language, "apology_short") + " "
+    return ""
+
+
+def price_answer(language: str, business: dict | None) -> str:
+    """Pricing help backed only by business.json: ranges if listed there, otherwise the free-visit policy."""
+    ranges = (business or {}).get("price_ranges") or []
+    if ranges:
+        return text(language, "price_ranges").format(ranges="; ".join(str(r) for r in ranges))
+    return text(language, "price")
+
+
+# Generic closers that make replies sound robotic; the server adds the one real follow-up itself.
+BOILERPLATE = re.compile(
+    r"let me know if|feel free to (?:ask|reach out|contact)|if you (?:have|need) any (?:other |more |further )?"
+    r"(?:questions|help|assistance)|i'?m here to help|hope (?:this|that) helps|is there anything else|"
+    r"any further assistance",
+    re.I,
+)
+
+
+def polish_answer(answer: str) -> str:
+    sentences = re.split(r"(?<=[.!?])\s+", answer.strip())
+    return " ".join(s for s in sentences if not BOILERPLATE.search(s)).strip()
 
 
 def design_suggestion(memory: SessionMemory) -> str:
@@ -362,7 +554,8 @@ SHORT_ACKS = {
     "ಧನ್ಯವಾದಗಳು",
 }
 PRICE_INTENT = re.compile(
-    r"\b(?:price\w*|cost\w*|estimat\w*|quot(?:e|ation)\w*|rates?|charges?|eshtu)\b|\bhow much\b|ಬೆಲೆ|ವೆಚ್ಚ|ಅಂದಾಜು|ದರ|ಎಷ್ಟು",
+    r"\b(?:pric\w*|cost\w*|estimat\w*|quot(?:e|ation)\w*|rates?|charges?|budget\w*|afford\w*|expensive|"
+    r"cheap\w*|eshtu|bele)\b|\bhow much\b|ಬೆಲೆ|ವೆಚ್ಚ|ಅಂದಾಜು|ದರ|ಎಷ್ಟು",
     re.I,
 )
 DESIGN_INTENT = re.compile(r"\b(?:suggest\w*|suggession|recommend\w*)\b|ಸಲಹೆ|ಸೂಚಿಸಿ", re.I)
@@ -532,14 +725,38 @@ REVIEWED_MODES = {
 }
 
 
+FACT_FIELDS = ("service", "purpose", "material", "size", "design_preference", "location", "preferred_time")
+
+
+def understood(patch: Extraction) -> bool:
+    """Did this turn give us anything to act on?"""
+    return bool(
+        any(getattr(patch, key) is not None for key in FACT_FIELDS)
+        or patch.is_ack
+        or patch.asks_price
+        or patch.shares_phone
+        or patch.contact_consent is not None
+    )
+
+
 def reviewed_reply(
-    memory: SessionMemory, patch: Extraction, plan: Plan, message: str, previous_awaiting: str | None
+    memory: SessionMemory,
+    patch: Extraction,
+    plan: Plan,
+    message: str,
+    previous_awaiting: str | None,
+    last: str = "",
+    business: dict | None = None,
+    answered: bool = False,
 ) -> str:
     language = memory.state.language
     parts = []
     if plan.mode not in ("out_of_area", "declined"):
         if patch.asks_price:
-            parts.append(text(language, "price"))
+            parts.append(price_answer(language, business))
+        elif plan.mode in ("service", "help") and not answered and not understood(patch):
+            # Rather than repeating the bare question, say what we can help with.
+            parts.append(text(language, "capabilities"))
         if "skylight" in message.casefold() and patch.service and patch.design_preference != "recommend":
             parts.append(text(language, "skylight_review"))
         if plan.mode == "service" and patch.purpose == "home" and not memory.state.service:
@@ -554,7 +771,7 @@ def reviewed_reply(
             parts.append(design_suggestion(memory))
         if plan.mode == "consent" and memory.state.area_status == "uncertain":
             parts.append(text(language, "coverage_pending"))
-    parts.append(text(language, plan.mode))
+    parts.append(say(language, plan.mode, last, memory.turn))
     return " ".join(parts)
 
 
@@ -595,7 +812,7 @@ def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: s
         "ಬೇಡ",
         "ಇಲ್ಲ",
     }
-    if answer in accepted:
+    if answer in accepted or (patch.shares_phone and not OPT_OUT.search(message)):
         return patch.model_copy(update={"contact_consent": True, "is_ack": False})
     if answer in declined:
         return patch.model_copy(update={"contact_consent": False, "is_ack": False})
@@ -728,14 +945,20 @@ PROMISE_RE = re.compile(
 )
 
 
-def validated_reply(reply: str, memory: SessionMemory, plan: Plan) -> tuple[str, bool]:
+def validated_reply(
+    reply: str, memory: SessionMemory, plan: Plan, business: dict | None = None
+) -> tuple[str, bool]:
+    # Price ranges published in business.json may be quoted verbatim; any other number is still blocked.
+    checked = reply
+    for sanctioned in (business or {}).get("price_ranges") or []:
+        checked = checked.replace(str(sanctioned), "")
     if (
         not reply.strip()
         or len(reply) > 1800
-        or CURRENCY_RE.search(reply)
-        or RATE_RE.search(reply)
-        or PRICE_RE.search(reply)
-        or PROMISE_RE.search(reply)
+        or CURRENCY_RE.search(checked)
+        or RATE_RE.search(checked)
+        or PRICE_RE.search(checked)
+        or PROMISE_RE.search(checked)
     ):
         return text(memory.state.language, "price") + " " + text(memory.state.language, plan.mode), False
     # Main owns reviewed transitions and questions; this guard checks factual model prose.

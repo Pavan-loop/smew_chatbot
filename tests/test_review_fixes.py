@@ -4,6 +4,7 @@ Runs the real FastAPI app with a scripted fake LLM provider. Can live in smew-bo
 """
 
 import json
+import re
 import tempfile
 import uuid
 from contextlib import asynccontextmanager
@@ -13,12 +14,23 @@ import httpx
 import pytest
 from starlette.requests import Request
 
-from app.brain import BUSINESS_INFO_COPY, COPY, business_info_intent, business_question
+from app.brain import (
+    BUSINESS_INFO_COPY,
+    COPY,
+    PRICE_INTENT,
+    Plan,
+    business_info_intent,
+    business_question,
+    polish_answer,
+    price_answer,
+    social_kind,
+    validated_reply,
+)
 from app.config import Settings
 from app.main import create_app
-from app.models import Extraction
+from app.models import Extraction, SessionMemory
 from app.providers import REPLY_PROMPT
-from app.security import client_ip
+from app.security import client_ip, redact_phones
 
 pytestmark = pytest.mark.asyncio
 
@@ -58,13 +70,17 @@ TO_CONSENT = [
 
 class FakeProvider:
     replies = 0
+    answer = LLM_ANSWER
+    seen: list[str] = []  # every message and history entry the "LLM" was sent
 
     async def extract(self, history, message, memory, business):
+        FakeProvider.seen += [message] + [m["content"] for m in history]
         return Extraction(**(BASE | FACTS.get(message, {}))), {}
 
     async def reply(self, history, message, memory, move, business):
         FakeProvider.replies += 1
-        return LLM_ANSWER, {}
+        FakeProvider.seen += [message] + [m["content"] for m in history]
+        return FakeProvider.answer, {}
 
 
 @asynccontextmanager
@@ -239,7 +255,7 @@ async def test_live_conversation_ceo_and_services():
         assert COPY["en"]["service"] not in text
         # An earlier FAQ answer must not suppress the next one.
         text, _ = await chat(c, auth, "what do you do?")
-        assert text.startswith(SERVICES_ANSWER), text
+        assert SERVICES_ANSWER in text, text
 
 
 @pytest.mark.parametrize(
@@ -285,3 +301,142 @@ async def test_ceo_prompt_and_copy_do_not_contradict_owner():
     assert "answer with the listed owner" in REPLY_PROMPT
     assert "confirmed CEO name" not in REPLY_PROMPT
     assert all("ceo_unknown" not in copy for copy in BUSINESS_INFO_COPY.values())
+
+
+# 6. Polite, friendly and helpful (live conversation) ------------------------------------------
+
+BARE_SERVICE_QUESTION = COPY["en"]["service"]
+
+
+def last_question(reply: str) -> str:
+    questions = [s for s in re.split(r"(?<=[.!?])\s+", reply) if s.endswith("?")]
+    return questions[-1] if questions else ""
+
+
+async def test_live_conversation_is_polite_and_helpful():
+    async with client() as c:
+        auth = await new_session(c)
+        replies = []
+        for message in [
+            "hey",
+            "how are you",
+            "you are rood",
+            "okay tell me about your pricing range",
+            "where are you located",
+            "who is the ceo",
+        ]:
+            replies.append((await chat(c, auth, message))[0])
+        hey, how, rude, pricing, where, ceo = replies
+        assert hey == COPY["en"]["greeting"]
+        assert "doing well" in how and how != BARE_SERVICE_QUESTION
+        assert rude.startswith("Sorry") and BARE_SERVICE_QUESTION not in rude
+        assert "depend" in pricing and "site visit" in pricing and pricing != BARE_SERVICE_QUESTION
+        assert where.startswith(LLM_ANSWER)
+        assert ceo == OWNER_ANSWER
+        for previous, current in zip(replies, replies[1:]):
+            assert previous != current
+            assert not last_question(current) or last_question(previous) != last_question(current)
+
+
+@pytest.mark.parametrize(
+    "message, kind",
+    [
+        ("how are you", "how_are_you"),
+        ("Hi, how are you doing today?", "how_are_you"),
+        ("how r u", "how_are_you"),
+        ("hegiddira", "how_are_you"),
+        ("you are rood", "apology"),
+        ("you are so rude", "apology"),
+        ("this bot is useless", "apology"),
+        ("u r stupid", "apology"),
+        ("you're not listening", "frustration"),
+        ("I already told you", "frustration"),
+        ("great job", "compliment"),
+        ("you are very helpful, thanks", "compliment"),
+        ("I need a gate", None),
+        ("my old gate is bad", None),
+        ("about 12 x 6 feet", None),
+        ("yes", None),
+    ],
+)
+async def test_small_talk_classification(message, kind):
+    assert social_kind(message) == kind
+
+
+async def test_kanglish_small_talk_and_mixed_rudeness():
+    async with client() as c:
+        auth = await new_session(c)
+        r = await c.post(
+            "/api/chat",
+            json={"message": "hegiddira", "request_id": str(uuid.uuid4()), "language": "kanglish"},
+            headers=auth,
+        )
+        assert COPY["kanglish"]["how_are_you"] in r.text
+        text, _ = await chat(c, auth, "you are rude, how much for a gate?")
+        assert text.startswith("Sorry about that!") and "depend" in text
+
+
+@pytest.mark.parametrize(
+    "message", ["okay tell me about your pricing range", "what's the budget?", "how much", "your rates?"]
+)
+async def test_pricing_questions_are_recognised(message):
+    assert PRICE_INTENT.search(message)
+
+
+async def test_price_answers_use_only_business_json_ranges():
+    memory, plan = SessionMemory(), Plan("service")
+    business = {"price_ranges": ["MS gates: Rs 450-600 per sq ft"]}
+    assert "Rs 450-600 per sq ft" in price_answer("en", business)
+    assert price_answer("en", {}) == COPY["en"]["price"]
+    ok = "MS gates: Rs 450-600 per sq ft, depending on design."
+    assert validated_reply(ok, memory, plan, business) == (ok, True)
+    assert not validated_reply("SS gates cost Rs 900 per sq ft.", memory, plan, business)[1]
+    assert not validated_reply(ok, memory, plan, {})[1]  # not sanctioned without business.json ranges
+
+
+async def test_model_boilerplate_is_removed_and_unclear_messages_get_help():
+    assert polish_answer("We're in Kuppalur. Let me know if you need any further assistance!") == (
+        "We're in Kuppalur."
+    )
+    async with client() as c:
+        auth = await new_session(c)
+        FakeProvider.answer = (
+            "Our workshop is in Kuppalur, Mysuru. Let me know if you need any further assistance!"
+        )
+        try:
+            text, _ = await chat(c, auth, "where are you located")
+        finally:
+            FakeProvider.answer = LLM_ANSWER
+        assert text.startswith("Our workshop is in Kuppalur, Mysuru.") and "Let me know" not in text
+        text, _ = await chat(c, auth, "asdfgh")
+        assert COPY["en"]["capabilities"] in text
+        questions = [last_question(text)]
+        for message in ["qwerty", "Where is your shop?", "hmm", "What is your address?"]:
+            questions.append(last_question((await chat(c, auth, message))[0]))
+        assert all(a != b for a, b in zip(questions, questions[1:])), questions
+
+
+# 7. Phone numbers typed in chat are redacted ---------------------------------------------------
+
+
+async def test_phone_numbers_are_masked_before_storage_and_llm():
+    assert redact_phones("call me on +91 98765 43210") == ("call me on +XX XXXXX XXX10", True)
+    assert redact_phones("is 9986464819 yours?", ("9986464819",)) == ("is 9986464819 yours?", False)
+    FakeProvider.seen = []
+    async with client() as c:
+        auth = await new_session(c)
+        for message in TO_CONSENT:
+            await chat(c, auth, message)
+        text, _ = await chat(c, auth, "sure, my number is 98765 43210")
+        assert "convenient time" in text  # typed number still counts as consent / opt-in
+        stored = (await c.get("/api/session", headers=auth)).json()["messages"]
+        assert any("XXXXX XXX10" in m["content"] for m in stored)
+        assert not any("43210" in m["content"] for m in stored)
+        _, form = await chat(c, auth, "evening after 6")
+        assert form and (await lead(c, auth, "9876543210")).status_code == 200  # lead form unaffected
+    assert not any("43210" in m for m in FakeProvider.seen)
+
+
+async def test_capacity_defaults():
+    settings = Settings(environment="test")
+    assert settings.max_daily_chat_requests == 2000 and settings.max_concurrent_chats == 10

@@ -29,9 +29,10 @@ class Settings(BaseSettings):
     worker_enabled: bool = True
     worker_interval_seconds: float = Field(default=3, ge=0.1)
     max_notification_attempts: int = Field(default=8, ge=1, le=20)
-    max_daily_chat_requests: int = Field(default=100, ge=1)
+    # ~2 gpt-4o-mini calls per chat turn (about US$0.001); 2000/day caps spend near US$2/day.
+    max_daily_chat_requests: int = Field(default=2000, ge=1)
     max_daily_leads: int = Field(default=30, ge=1)
-    max_concurrent_chats: int = Field(default=2, ge=1, le=8)
+    max_concurrent_chats: int = Field(default=10, ge=1, le=32)
     session_days: int = Field(default=7, ge=1, le=30)
     conversation_retention_days: int = Field(default=30, ge=1, le=30)
     lead_retention_days: int = Field(default=180, ge=1, le=180)

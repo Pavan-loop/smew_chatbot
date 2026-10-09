@@ -3,6 +3,7 @@ import hashlib
 import hmac
 import ipaddress
 import json
+import re
 import secrets
 import time
 
@@ -70,3 +71,33 @@ def bearer(request: Request) -> str:
     if scheme.lower() != "bearer" or not token or len(token) > 1024:
         raise HTTPException(401, "Authorization required")
     return token
+
+
+# Indian mobile numbers, optionally with +91/0 and spaces or dashes between digits.
+PHONE_RE = re.compile(r"(?<![\w+])(?:\+?91[\s-]?|0)?[6-9](?:[\s-]?\d){9}(?!\d)")
+
+
+def redact_phones(message: str, keep: tuple[str, ...] = ()) -> tuple[str, bool]:
+    """Mask phone numbers typed into chat (all but the last two digits) before storage or the LLM.
+
+    Numbers in `keep` (the workshop's own) stay readable. Returns the text and whether a number was found.
+    """
+    found = False
+
+    def mask(match: re.Match) -> str:
+        nonlocal found
+        digits = re.sub(r"\D", "", match.group(0))
+        if digits[-10:] in keep:
+            return match.group(0)
+        found = True
+        hidden = len(digits) - 2
+        out = []
+        for char in match.group(0):
+            if char.isdigit() and hidden > 0:
+                out.append("X")
+                hidden -= 1
+            else:
+                out.append(char)
+        return "".join(out)
+
+    return PHONE_RE.sub(mask, message), found
