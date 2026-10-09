@@ -18,6 +18,7 @@ from app.brain import (
     BUSINESS_INFO_COPY,
     COPY,
     PRICE_INTENT,
+    VARIANTS,
     Plan,
     business_info_intent,
     business_question,
@@ -59,6 +60,10 @@ FACTS = {
     "Kuvempunagar, Mysuru": dict(location="Kuvempunagar, Mysuru", area_status="served"),
     "no thanks": dict(contact_consent=False),
     "evening after 6": dict(preferred_time="evening after 6"),
+    # What the real extractor returned in the live new-house conversation.
+    "yea i'm building a house": dict(purpose="home"),
+    "i want a estimation on all work at home": dict(purpose="home", asks_price=True),
+    "I need some fabrication for my home": dict(purpose="home"),
 }
 TO_CONSENT = [
     "I need a main gate for my house",
@@ -440,3 +445,63 @@ async def test_phone_numbers_are_masked_before_storage_and_llm():
 async def test_capacity_defaults():
     settings = Settings(environment="test")
     assert settings.max_daily_chat_requests == 2000 and settings.max_concurrent_chats == 10
+
+
+# 8. New house / "everything" is a full fabrication package --------------------------------------
+
+
+def sentences(reply: str) -> list[str]:
+    return [s for s in re.split(r"(?<=[.!?])\s+", reply.strip()) if s]
+
+
+SERVICE_QUESTIONS = [COPY["en"]["service"], *VARIANTS["en"]["service"]]
+
+
+async def test_live_new_house_conversation():
+    async with client() as c:
+        auth = await new_session(c)
+        house, _ = await chat(c, auth, "yea i'm building a house")
+        estimate, _ = await chat(c, auth, "i want a estimation on all work at home")
+        everything, _ = await chat(c, auth, "everything")
+        replies = [house, estimate, everything]
+        assert house.startswith("Congratulations on the new house!")
+        for previous, reply in zip([""] + replies, replies):
+            parts = sentences(reply)
+            assert len(parts) == len(set(parts)), reply  # no sentence twice
+            stale = [p for p in parts if p in sentences(previous) and not p.endswith("?")]
+            assert not stale, reply  # no acknowledgement carried over from the previous reply
+            assert sum(p.endswith("?") for p in parts) <= 1, reply
+            assert not any(q in reply for q in SERVICE_QUESTIONS), reply  # never "pick one item"
+        assert "depend" in estimate and COPY["en"]["house"] not in estimate
+        assert COPY["en"]["capabilities"] not in everything and "area" in everything
+        # The flow continues: location, then the free visit offer with the contact question.
+        text, _ = await chat(c, auth, "Kuvempunagar, Mysuru")
+        assert COPY["en"]["visit_offer"] in text and text.endswith("?")
+
+
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "everything",
+        "all work",
+        "all fabrication work",
+        "full house",
+        "complete work",
+        "whole house",
+        "all of it",
+        "sab",
+        "ella",
+        "ಎಲ್ಲಾ",
+    ],
+)
+async def test_everything_is_a_valid_product_answer(answer):
+    async with client() as c:
+        auth = await new_session(c)
+        first, _ = await chat(c, auth, "I need some fabrication for my home")
+        assert any(q in first for q in SERVICE_QUESTIONS)  # product not known yet
+        text, _ = await chat(c, auth, answer)
+        assert COPY["en"]["capabilities"] not in text
+        assert not any(q in text for q in SERVICE_QUESTIONS), text  # accepted: flow moved on
+        # Size/design are left to the site visit, so the location answer leads to the visit offer.
+        text, _ = await chat(c, auth, "Kuvempunagar, Mysuru")
+        assert COPY["en"]["visit_offer"] in text

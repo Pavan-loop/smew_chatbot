@@ -29,6 +29,10 @@ COPY = {
         "remembered": "In this chat, you mentioned {details}. I can't identify you across separate chats or devices.",
         "suggestion": "That's completely fine—you don't need a design ready. Prashanth can discuss suitable options with you during the site visit.",
         "house": "Of course, we can help with the fabrication for your house.",
+        "package_new": "Congratulations on the new house! We can take care of all the fabrication: gates, window grills, railings, staircase and balcony work, shutters and more.",
+        "package": "Great, we can take care of all the fabrication for your home: gates, window grills, railings, staircase and balcony work, shutters and more.",
+        "package_confirm": "Got it, we'll plan for all the fabrication work.",
+        "visit_offer": "Prashanth can visit the site for free to understand the full scope.",
         "unknown_size": "No worries—we can take the measurements during the site visit.",
         "location_city": "Which city is the work in—Mysuru or another city?",
         "coverage_pending": "Prashanth can check whether we cover your area before we plan a visit.",
@@ -66,6 +70,10 @@ COPY = {
         "remembered": "ಈ ಚಾಟ್‌ನಲ್ಲಿ ನೀವು {details} ಬಗ್ಗೆ ತಿಳಿಸಿದ್ದೀರಿ. ಬೇರೆ ಚಾಟ್ ಅಥವಾ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮನ್ನು ಗುರುತಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.",
         "suggestion": "ಪರವಾಗಿಲ್ಲ, ಈಗಲೇ ವಿನ್ಯಾಸ ಆಯ್ಕೆ ಮಾಡಬೇಕಿಲ್ಲ. ಸ್ಥಳ ಪರಿಶೀಲನೆಯ ವೇಳೆ ಪ್ರಶಾಂತ್ ಅವರು ಸೂಕ್ತ ಆಯ್ಕೆಗಳನ್ನು ತಿಳಿಸಿ ಸಹಾಯ ಮಾಡಬಹುದು.",
         "house": "ಖಂಡಿತ, ನಿಮ್ಮ ಮನೆಯ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸದ ಬಗ್ಗೆ ಸಹಾಯ ಮಾಡಬಹುದು.",
+        "package_new": "ಹೊಸ ಮನೆಗೆ ಅಭಿನಂದನೆಗಳು! ಗೇಟ್, ಕಿಟಕಿ ಗ್ರಿಲ್, ರೇಲಿಂಗ್, ಮೆಟ್ಟಿಲು ಮತ್ತು ಬಾಲ್ಕನಿ ಕೆಲಸ, ಶಟರ್ ಸೇರಿದಂತೆ ಎಲ್ಲಾ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸವನ್ನು ನಾವು ಮಾಡಬಹುದು.",
+        "package": "ಖಂಡಿತ, ಗೇಟ್, ಕಿಟಕಿ ಗ್ರಿಲ್, ರೇಲಿಂಗ್, ಮೆಟ್ಟಿಲು ಮತ್ತು ಬಾಲ್ಕನಿ ಕೆಲಸ, ಶಟರ್ ಸೇರಿದಂತೆ ನಿಮ್ಮ ಮನೆಯ ಎಲ್ಲಾ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸವನ್ನು ನಾವು ಮಾಡಬಹುದು.",
+        "package_confirm": "ಸರಿ, ಎಲ್ಲಾ ಫ್ಯಾಬ್ರಿಕೇಶನ್ ಕೆಲಸವನ್ನು ಗಮನಕ್ಕೆ ತೆಗೆದುಕೊಳ್ಳುತ್ತೇವೆ.",
+        "visit_offer": "ಪೂರ್ಣ ಕೆಲಸವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಪ್ರಶಾಂತ್ ಅವರು ಉಚಿತವಾಗಿ ಸ್ಥಳಕ್ಕೆ ಭೇಟಿ ನೀಡಬಹುದು.",
         "unknown_size": "ಚಿಂತಿಸಬೇಡಿ—ಸ್ಥಳ ಪರಿಶೀಲನೆಯ ವೇಳೆ ಅಳತೆ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.",
         "location_city": "ಕೆಲಸ ಯಾವ ನಗರದಲ್ಲಿದೆ—ಮೈಸೂರು ಅಥವಾ ಬೇರೆ ನಗರವೇ?",
         "coverage_pending": "ನಿಮ್ಮ ಪ್ರದೇಶದಲ್ಲಿ ಸೇವೆ ನೀಡಬಹುದೇ ಎಂದು ಪ್ರಶಾಂತ್ ಅವರು ಖಚಿತಪಡಿಸಬೇಕು.",
@@ -103,6 +111,10 @@ COPY = {
         "remembered": "Ee chat alli neevu {details} bagge heliddira. Bere chat athava device alli nimmanu guruthisoke aagalla.",
         "suggestion": "Parvagilla, iga design decide madbeku anta illa. Site visit time alli Prashanth avaru suitable options discuss madi help madabahudu.",
         "house": "Khanditha, nimma mane fabrication kelasa bagge help madabahudu.",
+        "package_new": "Hosa mane ge congratulations! Gate, window grill, railing, staircase mattu balcony kelasa, shutter ellavannu naavu madabahudu.",
+        "package": "Khanditha, gate, window grill, railing, staircase mattu balcony kelasa, shutter seri nimma mane fabrication ella naavu madabahudu.",
+        "package_confirm": "Sari, ella fabrication kelasa plan madtivi.",
+        "visit_offer": "Full scope artha madkoloke Prashanth avaru free aagi site visit madabahudu.",
         "unknown_size": "Parvagilla—site visit time alli measurements thagobahudu.",
         "location_city": "Kelasa yaava city alli ide—Mysuru athava bere city na?",
         "coverage_pending": "Nimma area cover madabahuda anta Prashanth avaru confirm madabeku.",
@@ -628,6 +640,21 @@ def business_question(message: str) -> bool:
     )
 
 
+# A new house or "all the work" is one project: the full fabrication package, not a single product.
+HOUSE_PACKAGE = "Complete house fabrication (gates, grills, railings, etc.)"
+NEW_BUILD = re.compile(
+    r"\b(?:build\w*|construct\w*|new)\b.{0,20}\b(?:house|home|mane|villa|bungalow)\b|"
+    r"\b(?:new construction|hosa mane)\b|ಹೊಸ ಮನೆ|ಮನೆ ಕಟ್ಟ",
+    re.I,
+)
+FULL_PACKAGE = re.compile(
+    r"\b(?:everything|all (?:the )?(?:work|works|of it|of them|fabrication(?: work)?|items|things)|"
+    r"full (?:house|home|package|work)|whole (?:house|home|work)|complete (?:work|house|home|package|job|fabrication)|"
+    r"entire (?:house|home|work)|sab(?: kuch)?|sabhi|ella(?:nu|vannu| kelasa| kelsa)?)\b|^all$|ಎಲ್ಲಾ|ಎಲ್ಲವೂ|ಎಲ್ಲ ಕೆಲಸ",
+    re.I,
+)
+
+
 def normalize_turn(memory: SessionMemory, patch: Extraction, message: str, business: dict) -> Extraction:
     """Keep current-turn acts tied to current text, even if a model echoes old facts."""
     answer = short_answer(message)
@@ -660,6 +687,16 @@ def normalize_turn(memory: SessionMemory, patch: Extraction, message: str, busin
     # Short answers, measurements and place names cannot silently change the product list.
     if memory.state.service and not PRODUCT_WORDS.search(message):
         updates["service"] = None
+    new_build = bool(NEW_BUILD.search(message))
+    if new_build:
+        updates["purpose"] = "home"
+        memory.asked["new_build"] = 1
+    home = new_build or memory.state.purpose == "home" or patch.purpose == "home"
+    wants_all = FULL_PACKAGE.search(answer) and (home or memory.awaiting == "service")
+    if not memory.state.service and not PRODUCT_WORDS.search(message) and (new_build or wants_all):
+        # The whole house's fabrication is measured and designed at the free site visit.
+        updates.update(service=HOUSE_PACKAGE, size="To be measured during the site visit")
+        memory.asked.update(size=1, design=1)
     if answer in UNKNOWN_ANSWERS and memory.awaiting == "size":
         updates["size"] = "To be measured during the site visit"
     if answer in UNKNOWN_ANSWERS or answer in SHORT_ACKS:
@@ -759,8 +796,19 @@ def reviewed_reply(
             parts.append(text(language, "capabilities"))
         if "skylight" in message.casefold() and patch.service and patch.design_preference != "recommend":
             parts.append(text(language, "skylight_review"))
-        if plan.mode == "service" and patch.purpose == "home" and not memory.state.service:
+        package = memory.state.service == HOUSE_PACKAGE
+        if package and not memory.asked.get("package_ack"):
+            memory.asked["package_ack"] = 1
+            parts.append(text(language, "package_new" if memory.asked.get("new_build") else "package"))
+        elif package and FULL_PACKAGE.search(short_answer(message)) and not patch.asks_price:
+            parts.append(text(language, "package_confirm"))
+        elif plan.mode == "service" and patch.purpose == "home" and not memory.asked.get("house_ack"):
+            # Acknowledge the house once; re-deriving it from later "home" mentions made it repeat.
+            memory.asked["house_ack"] = 1
             parts.append(text(language, "house"))
+        if package and plan.mode == "consent" and not memory.asked.get("visit_offer"):
+            memory.asked["visit_offer"] = 1
+            parts.append(text(language, "visit_offer"))
         if previous_awaiting == "size" and short_answer(message) in UNKNOWN_ANSWERS:
             parts.append(text(language, "unknown_size"))
         if (
@@ -771,8 +819,21 @@ def reviewed_reply(
             parts.append(design_suggestion(memory))
         if plan.mode == "consent" and memory.state.area_status == "uncertain":
             parts.append(text(language, "coverage_pending"))
-    parts.append(say(language, plan.mode, last, memory.turn))
-    return " ".join(parts)
+    # At most one question per reply: an answer that already asks something gets no extra question.
+    if not any(part.rstrip().endswith("?") for part in parts):
+        parts.append(say(language, plan.mode, last, memory.turn))
+    return dedupe_sentences(" ".join(parts), last)
+
+
+def dedupe_sentences(reply: str, last: str = "") -> str:
+    """Drop repeated sentences and statements already made in the previous reply (questions are kept)."""
+    seen = set(re.split(r"(?<=[.!?])\s+", last.strip())) if last else set()
+    kept = []
+    for sentence in re.split(r"(?<=[.!?])\s+", reply.strip()):
+        if sentence in kept or (sentence in seen and not sentence.endswith("?")):
+            continue
+        kept.append(sentence)
+    return " ".join(kept) or reply
 
 
 def normalize_consent_reply(memory: SessionMemory, patch: Extraction, message: str) -> Extraction:

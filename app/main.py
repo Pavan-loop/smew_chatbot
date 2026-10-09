@@ -24,6 +24,7 @@ from app.brain import (
     business_info_reply,
     business_question,
     conversational_reply,
+    dedupe_sentences,
     merge,
     normalize_turn,
     outside_service_area,
@@ -303,9 +304,9 @@ def create_app(settings: Settings | None = None, provider=None) -> FastAPI:
                                 if plan.mode in REVIEWED_MODES
                                 else ""
                             )
-                            reply = " ".join(part for part in (answer, followup) if part) or text(
-                                memory.state.language, "help"
-                            )
+                            reply = dedupe_sentences(
+                                " ".join(part for part in (answer, followup) if part)
+                            ) or text(memory.state.language, "help")
                     reply = social_prefix(body.message, memory.state.language) + reply
                 if reply.strip() == last.strip():
                     # Never send the exact same message twice in a row.
